@@ -1,0 +1,107 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    match /users/{uid} {
+      allow read, create, update: if isOwner(uid);
+      allow delete: if false;
+    }
+
+    match /public_profiles/{uid} {
+      allow read: if true;
+      allow create, update: if isOwner(uid);
+      allow delete: if false;
+    }
+
+    match /categories/{categoryId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /questions/{questionId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /rooms/{roomId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.hostId == request.auth.uid;
+      allow update: if signedIn()
+        && (
+          resource.data.hostId == request.auth.uid
+          || request.resource.data.players.hasAny([request.auth.uid])
+        );
+      allow delete: if signedIn() && resource.data.hostId == request.auth.uid;
+
+      match /players/{uid} {
+        allow read: if signedIn();
+        allow create, update: if isOwner(uid) || get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid;
+        allow delete: if isOwner(uid) || get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid;
+      }
+    }
+
+    match /game_sessions/{sessionId} {
+      allow read: if signedIn() && request.auth.uid in resource.data.playerIds;
+      allow create: if signedIn();
+      allow update: if signedIn() && request.auth.uid in resource.data.playerIds;
+      allow delete: if false;
+
+      match /answers/{answerId} {
+        allow read: if signedIn();
+        allow create: if signedIn()
+          && request.resource.data.uid == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+
+    match /matchmaking_queue/{uid} {
+      allow read: if signedIn();
+      allow create, update, delete: if isOwner(uid);
+    }
+
+    match /daily_challenges/{dateKey} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /daily_scores/{scoreId} {
+      allow read: if signedIn();
+      allow create, update: if signedIn()
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if false;
+    }
+
+    match /leaderboards/{period}/entries/{uid} {
+      allow read: if true;
+      allow create, update: if isOwner(uid);
+      allow delete: if false;
+    }
+
+    match /friend_requests/{requestId} {
+      allow read: if signedIn()
+        && (resource.data.fromUid == request.auth.uid || resource.data.toUid == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.fromUid == request.auth.uid;
+      allow update: if signedIn() && resource.data.toUid == request.auth.uid;
+      allow delete: if false;
+    }
+
+    match /friends/{uid}/items/{friendUid} {
+      allow read, create, update, delete: if isOwner(uid);
+    }
+
+    match /match_history/{historyId} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+  }
+}
