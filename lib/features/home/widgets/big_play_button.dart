@@ -52,6 +52,20 @@ class _BigPlayButtonState extends State<BigPlayButton> {
               clipBehavior: Clip.none,
               children: [
                 Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    height: compact ? 14 : 18,
+                    decoration: BoxDecoration(
+                      color: AppColors.challengeDark.withValues(alpha: 0.22),
+                      borderRadius: BorderRadius.vertical(
+                        bottom: Radius.circular(compact ? 20 : 22),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
                   top: 8,
                   left: 18,
                   right: 18,

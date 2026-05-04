@@ -35,8 +35,8 @@ class _MascotAvatarState extends State<MascotAvatar>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        final lift = -8 * _controller.value;
-        final scale = 1 + (_controller.value * 0.025);
+        final lift = -9 * _controller.value;
+        final scale = 1 + (_controller.value * 0.028);
         return Transform.translate(
           offset: Offset(0, lift),
           child: Transform.scale(scale: scale, child: child),
@@ -58,7 +58,7 @@ class _MascotAvatarState extends State<MascotAvatar>
                     width: 154,
                     height: 28,
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.3),
+                      color: Colors.black.withValues(alpha: 0.32),
                       borderRadius: BorderRadius.circular(999),
                     ),
                   ),
@@ -83,9 +83,9 @@ class _MascotAvatarState extends State<MascotAvatar>
                       boxShadow: [
                         BoxShadow(
                           color: AppColors.challengeCyan.withValues(
-                            alpha: 0.22,
+                            alpha: 0.24,
                           ),
-                          blurRadius: 20,
+                          blurRadius: 22,
                           offset: const Offset(0, 8),
                         ),
                       ],
@@ -133,10 +133,8 @@ class _MascotAvatarState extends State<MascotAvatar>
                       border: Border.all(color: Colors.white, width: 4),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.challengeGold.withValues(
-                            alpha: 0.28,
-                          ),
-                          blurRadius: 18,
+                          color: AppColors.challengeGold.withValues(alpha: 0.3),
+                          blurRadius: 20,
                           offset: const Offset(0, 9),
                         ),
                       ],

@@ -17,9 +17,9 @@ class ProgressUnlockBanner extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
-            Color(0xFF3B1A75),
-            AppColors.challengePurple,
             AppColors.challengePink,
+            AppColors.challengePurple,
+            AppColors.challengeBlue,
           ],
           begin: Alignment.centerRight,
           end: Alignment.centerLeft,
@@ -115,12 +115,22 @@ class ProgressUnlockBanner extends StatelessWidget {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(999),
-                        child: LinearProgressIndicator(
-                          value: progress.clamp(0, 1),
-                          backgroundColor: Colors.transparent,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            AppColors.challengeGold,
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween<double>(
+                            begin: 0,
+                            end: progress.clamp(0, 1),
                           ),
+                          duration: const Duration(milliseconds: 850),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, value, _) {
+                            return LinearProgressIndicator(
+                              value: value,
+                              backgroundColor: Colors.transparent,
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                AppColors.challengeGold,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),

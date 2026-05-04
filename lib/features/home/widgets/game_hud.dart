@@ -29,12 +29,12 @@ class GameHud extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
-            Color(0xFF39D5FF),
-            AppColors.challengeBlue,
             AppColors.challengePurple,
+            AppColors.challengeBlue,
+            AppColors.challengeCyan,
           ],
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(26)),
         boxShadow: [

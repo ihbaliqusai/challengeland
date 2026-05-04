@@ -13,17 +13,18 @@ class HomeScene extends StatelessWidget {
         final height = constraints.maxHeight;
         final width = constraints.maxWidth;
         final compact = height < 700;
-        final wallTop = compact ? 166.0 : 192.0;
+        final wallTop = compact ? 164.0 : 190.0;
         final mascotTop = (height * (compact ? 0.36 : 0.38)).clamp(
           compact ? 238.0 : 282.0,
-          compact ? 310.0 : 350.0,
+          compact ? 308.0 : 350.0,
         );
-        final lowerObjectsBottom = compact ? 108.0 : 134.0;
+        final lowerObjectsBottom = compact ? 106.0 : 132.0;
 
         return Stack(
           fit: StackFit.expand,
           children: [
             const _ArenaBackground(),
+            const _FloatingParticles(),
             Positioned(
               top: wallTop,
               right: 18,
@@ -65,10 +66,43 @@ class HomeScene extends StatelessWidget {
               child: _stackedTokens(compact: compact),
             ),
             Positioned(
+              top: mascotTop - (compact ? 4 : 10),
+              left: 0,
+              right: 0,
+              child: Center(child: _mascotGlow(compact: compact)),
+            ),
+            Positioned(
               top: mascotTop,
               left: 0,
               right: 0,
               child: Center(child: MascotAvatar(size: compact ? 188 : 224)),
+            ),
+            Positioned(
+              top: mascotTop + (compact ? 14 : 20),
+              right: width * 0.20,
+              child: _floatingIcon(
+                Icons.star_rounded,
+                AppColors.challengeYellow,
+                compact,
+              ),
+            ),
+            Positioned(
+              top: mascotTop + (compact ? 90 : 104),
+              left: width * 0.20,
+              child: _floatingIcon(
+                Icons.emoji_events_rounded,
+                AppColors.challengeGold,
+                compact,
+              ),
+            ),
+            Positioned(
+              top: mascotTop + (compact ? 130 : 154),
+              right: width * 0.24,
+              child: _floatingIcon(
+                Icons.bolt_rounded,
+                AppColors.challengeCyan,
+                compact,
+              ),
             ),
             Positioned(
               top: wallTop - 20,
@@ -79,11 +113,6 @@ class HomeScene extends StatelessWidget {
               top: wallTop - 34,
               right: width * 0.14,
               child: _lightBeam(AppColors.challengeCyan, compact: compact),
-            ),
-            Positioned(
-              bottom: compact ? 214 : 250,
-              right: 22,
-              child: _sideArrow(),
             ),
           ],
         );
@@ -325,6 +354,39 @@ class HomeScene extends StatelessWidget {
     );
   }
 
+  Widget _mascotGlow({required bool compact}) {
+    return Container(
+      width: compact ? 206 : 254,
+      height: compact ? 206 : 254,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            AppColors.challengeCyan.withValues(alpha: 0.26),
+            AppColors.challengePurple.withValues(alpha: 0.18),
+            Colors.transparent,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _floatingIcon(IconData icon, Color color, bool compact) {
+    return Container(
+      width: compact ? 34 : 40,
+      height: compact ? 34 : 40,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.challengeNavy.withValues(alpha: 0.72),
+        border: Border.all(color: color.withValues(alpha: 0.72), width: 1.5),
+        boxShadow: [
+          BoxShadow(color: color.withValues(alpha: 0.28), blurRadius: 14),
+        ],
+      ),
+      child: Icon(icon, color: color, size: compact ? 21 : 24),
+    );
+  }
+
   Widget _lightBeam(Color color, {required bool compact}) {
     return Container(
       width: compact ? 38 : 46,
@@ -339,17 +401,79 @@ class HomeScene extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _sideArrow() {
-    return Container(
-      width: 42,
-      height: 54,
-      decoration: BoxDecoration(
-        color: AppColors.challengeNavy.withValues(alpha: 0.78),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+class _FloatingParticles extends StatefulWidget {
+  const _FloatingParticles();
+
+  @override
+  State<_FloatingParticles> createState() => _FloatingParticlesState();
+}
+
+class _FloatingParticlesState extends State<_FloatingParticles>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = [
+      AppColors.challengeCyan,
+      AppColors.challengeGold,
+      AppColors.challengePink,
+      AppColors.challengePurple,
+    ];
+    return IgnorePointer(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final size = MediaQuery.sizeOf(context);
+          return Stack(
+            children: List.generate(14, (index) {
+              final progress = (_controller.value + (index * 0.071)) % 1.0;
+              final left = (index * 53 % size.width).toDouble();
+              final top =
+                  size.height * (0.18 + (index % 5) * 0.105) - (progress * 18);
+              final color = colors[index % colors.length];
+              return Positioned(
+                left: left,
+                top: top,
+                child: Opacity(
+                  opacity: 0.18 + (0.18 * (1 - progress)),
+                  child: Container(
+                    width: index.isEven ? 5 : 7,
+                    height: index.isEven ? 5 : 7,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: color,
+                      boxShadow: [
+                        BoxShadow(
+                          color: color.withValues(alpha: 0.35),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+          );
+        },
       ),
-      child: const Icon(Icons.chevron_left_rounded, size: 34),
     );
   }
 }
@@ -395,6 +519,14 @@ class _ArenaPainter extends CustomPainter {
     for (var i = 0; i < 5; i++) {
       final y = size.height * 0.29 + (i * 52);
       canvas.drawLine(Offset(28, y), Offset(size.width - 28, y), paint);
+    }
+    for (var i = 0; i < 8; i++) {
+      final x = 30 + (i * (size.width - 60) / 7);
+      canvas.drawLine(
+        Offset(x, size.height * 0.62),
+        Offset(x + (size.width * 0.08), size.height * 0.92),
+        paint,
+      );
     }
 
     paint.color = AppColors.challengePurple.withValues(alpha: 0.2);

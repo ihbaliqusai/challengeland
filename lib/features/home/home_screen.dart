@@ -10,6 +10,7 @@ import 'widgets/game_hud.dart';
 import 'widgets/home_action_drawer.dart';
 import 'widgets/home_scene.dart';
 import 'widgets/progress_unlock_banner.dart';
+import 'widgets/side_boost_button.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final height = MediaQuery.sizeOf(context).height;
     final compact = height < 700;
     final safeBottom = MediaQuery.paddingOf(context).bottom;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -59,6 +61,11 @@ class _HomeScreenState extends State<HomeScreen> {
             right: 0,
             top: MediaQuery.paddingOf(context).top + (compact ? 88 : 104),
             child: ProgressUnlockBanner(progress: home.nextUnlockProgress),
+          ),
+          PositionedDirectional(
+            end: 14,
+            top: height * (compact ? 0.48 : 0.50),
+            child: const SideBoostButton(),
           ),
           Positioned(
             left: 0,
