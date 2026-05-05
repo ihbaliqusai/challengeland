@@ -292,7 +292,7 @@ class _RewardShield extends StatelessWidget {
             ),
           ),
           const Icon(
-            Icons.workspace_premium_rounded,
+            Icons.card_giftcard_rounded,
             color: Color(0xFF5C2A20),
             size: 46,
           ),

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 
 import '../core/constants/app_config.dart';
@@ -12,13 +10,16 @@ import '../models/question.dart';
 import '../models/user_profile.dart';
 import '../services/game_service.dart';
 
+enum BotDifficulty { easy, medium, hard }
+
 class GameProvider extends ChangeNotifier {
-  GameProvider({GameService? gameService, Random? random})
-    : _gameService = gameService ?? GameService(),
-      _random = random ?? Random();
+  GameProvider({
+    GameService? gameService,
+    this.botDifficulty = BotDifficulty.medium,
+  }) : _gameService = gameService ?? GameService();
 
   final GameService _gameService;
-  final Random _random;
+  final BotDifficulty botDifficulty;
 
   GameSession? session;
   List<Question> questions = const [];
@@ -26,7 +27,9 @@ class GameProvider extends ChangeNotifier {
   bool isLoading = false;
   String? error;
   String? selectedAnswer;
+  String? revealMessage;
   bool isRevealVisible = false;
+  bool didTimeout = false;
   int playerScore = 0;
   int opponentScore = 0;
   int correctAnswers = 0;
@@ -40,6 +43,11 @@ class GameProvider extends ChangeNotifier {
       : null;
   bool get isFinished => session?.isFinished == true;
   int get totalQuestions => questions.length;
+  String get botDifficultyLabel => switch (botDifficulty) {
+    BotDifficulty.easy => AppStrings.botEasy,
+    BotDifficulty.medium => AppStrings.botMedium,
+    BotDifficulty.hard => AppStrings.botHard,
+  };
 
   Future<void> startGame({
     required UserProfile player,
@@ -65,7 +73,9 @@ class GameProvider extends ChangeNotifier {
       );
       answers = const [];
       selectedAnswer = null;
+      revealMessage = null;
       isRevealVisible = false;
+      didTimeout = false;
       playerScore = 0;
       opponentScore = 0;
       correctAnswers = 0;
@@ -84,6 +94,7 @@ class GameProvider extends ChangeNotifier {
     required UserProfile player,
     required String answer,
     required int remainingTime,
+    bool timedOut = false,
   }) async {
     final currentSession = session;
     final question = currentQuestion;
@@ -94,11 +105,13 @@ class GameProvider extends ChangeNotifier {
       return;
     }
 
+    error = null;
+    didTimeout = timedOut;
     selectedAnswer = answer;
-    final isCorrect = question.isCorrect(answer);
+    final isCorrect = !timedOut && question.isCorrect(answer);
     final score = ScoreUtils.calculateQuestionScore(
       isCorrect: isCorrect,
-      remainingTime: remainingTime,
+      remainingTime: timedOut ? 0 : remainingTime,
       totalTime: currentSession.timerSeconds,
       basePoints: question.points,
     );
@@ -107,20 +120,38 @@ class GameProvider extends ChangeNotifier {
       question: question,
       player: player,
       selectedAnswer: answer,
-      remainingTime: remainingTime,
+      remainingTime: timedOut ? 0 : remainingTime,
       score: score,
     );
 
     answers = [...answers, savedAnswer];
     playerScore += score;
-    opponentScore += 70 + _random.nextInt(85);
+    opponentScore += _calculateBotQuestionScore(
+      question: question,
+      timerSeconds: currentSession.timerSeconds,
+      questionIndex: currentIndex,
+    );
     if (isCorrect) {
       correctAnswers++;
     } else {
       wrongAnswers++;
     }
+    revealMessage = timedOut
+        ? AppStrings.timeExpired
+        : isCorrect
+        ? AppStrings.correctAnswerTitle
+        : AppStrings.wrongAnswerTitle;
     isRevealVisible = true;
     notifyListeners();
+  }
+
+  Future<void> submitTimeout({required UserProfile player}) {
+    return submitAnswer(
+      player: player,
+      answer: AppStrings.timeExpired,
+      remainingTime: 0,
+      timedOut: true,
+    );
   }
 
   Future<void> nextQuestion(UserProfile player) async {
@@ -132,7 +163,10 @@ class GameProvider extends ChangeNotifier {
     }
     currentIndex++;
     selectedAnswer = null;
+    revealMessage = null;
     isRevealVisible = false;
+    didTimeout = false;
+    error = null;
     await _gameService.moveToNextQuestion(currentSession);
     notifyListeners();
   }
@@ -140,6 +174,7 @@ class GameProvider extends ChangeNotifier {
   Future<void> finish(UserProfile player) async {
     final currentSession = session;
     if (currentSession == null) return;
+    if (currentSession.isFinished) return;
     final won = playerScore >= opponentScore;
     session = await _gameService.finishGame(
       currentSession.copyWith(
@@ -165,5 +200,31 @@ class GameProvider extends ChangeNotifier {
   void resetRevealError() {
     error = null;
     notifyListeners();
+  }
+
+  int _calculateBotQuestionScore({
+    required Question question,
+    required int timerSeconds,
+    required int questionIndex,
+  }) {
+    final isBotCorrect = switch (botDifficulty) {
+      BotDifficulty.easy => questionIndex.isEven,
+      BotDifficulty.medium => (questionIndex + 1) % 3 != 0,
+      BotDifficulty.hard => (questionIndex + 1) % 5 != 0,
+    };
+    if (!isBotCorrect) return 0;
+
+    final remainingRatio = switch (botDifficulty) {
+      BotDifficulty.easy => 0.35,
+      BotDifficulty.medium => 0.55,
+      BotDifficulty.hard => 0.75,
+    };
+    final botRemainingTime = (timerSeconds * remainingRatio).round();
+    return ScoreUtils.calculateQuestionScore(
+      isCorrect: true,
+      remainingTime: botRemainingTime,
+      totalTime: timerSeconds,
+      basePoints: question.points,
+    );
   }
 }

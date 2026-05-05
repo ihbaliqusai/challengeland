@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 
 class BottomGameNav extends StatelessWidget {
   const BottomGameNav({
@@ -20,11 +21,11 @@ class BottomGameNav extends StatelessWidget {
     final liftSpace = compact ? 24.0 : 30.0;
     final totalHeight = safeBottom + barHeight + liftSpace;
     final items = const [
-      _NavItem('Shop', Icons.storefront_rounded),
-      _NavItem('Teams', Icons.diversity_3_rounded),
-      _NavItem('Home', Icons.home_rounded),
-      _NavItem('Events', Icons.sticky_note_2_rounded),
-      _NavItem('Albums', Icons.menu_book_rounded),
+      _NavItem(AppStrings.rewards, Icons.card_giftcard_rounded),
+      _NavItem(AppStrings.friends, Icons.diversity_3_rounded),
+      _NavItem(AppStrings.home, Icons.home_rounded),
+      _NavItem(AppStrings.daily, Icons.sticky_note_2_rounded),
+      _NavItem(AppStrings.albums, Icons.menu_book_rounded),
     ];
 
     return Directionality(
@@ -119,7 +120,7 @@ class _NavButton extends StatelessWidget {
     final normalHeight = compact ? 66.0 : 74.0;
     final iconBox = selected
         ? (compact ? 46.0 : 52.0)
-        : (compact ? 34.0 : 38.0);
+        : (compact ? 32.0 : 38.0);
 
     return Tooltip(
       message: item.label,

@@ -22,11 +22,33 @@ class AppStrings {
   static const unlockProgress = '50 / 100';
   static const winTwoMore = 'اربح مباراتين إضافيتين';
   static const playNow = 'العب الآن';
-  static const store = 'المتجر';
+  static const store = 'المكافآت';
+  static const rewards = 'المكافآت';
   static const friends = 'الأصدقاء';
   static const home = 'الرئيسية';
   static const missions = 'المهام';
   static const profile = 'الملف';
+  static const daily = 'اليومي';
+  static const albums = 'الألبوم';
+
+  static const rewardsTitle = 'المكافآت اليومية';
+  static const rewardsSubtitle = 'تفتح باللعب فقط';
+  static const funBundle = 'حزمة\nالمرح';
+  static const unlockByPlaying = 'افتح باللعب';
+  static const freeReward = 'هدية مجانية';
+  static const inviteFriends = 'ادع الأصدقاء';
+  static const playStreak = 'سلسلة لعب';
+  static const gameplayCoins = 'عملات اللعب';
+  static const earnByPlaying = 'اربح باللعب';
+  static const winStreak = 'سلسلة فوز';
+  static const dailyReward = 'تحدي يومي';
+  static const activeReward = 'مكافأة نشطة';
+  static const stickerSea = 'بحر\nالملصقات';
+  static const stickerAlbums = 'ألبوم الملصقات';
+  static const collectAlbums = 'اجمع الملصقات وأكمل الألبومات';
+  static const tradeWithFriends = 'بادل مع الأصدقاء';
+  static const winFreePrizes = 'اكسب جوائز مجانية';
+  static const unlockStickerAlbums = 'احصل على أول ملصق من اللعب لفتح الألبوم';
 
   static const quickChallenge = 'تحدي سريع';
   static const createRoom = 'إنشاء غرفة';
@@ -54,4 +76,33 @@ class AppStrings {
   static const noLeaderboard = 'لا توجد نتائج في لوحة الصدارة';
   static const noQuestions = 'لا توجد أسئلة متاحة';
   static const noRooms = 'لا توجد غرف متاحة';
+
+  static const loadingQuestions = 'جاري تحميل الأسئلة...';
+  static const quickRound = 'جولة سريعة';
+  static const you = 'أنت';
+  static const opponent = 'المنافس';
+  static const close = 'إغلاق';
+  static const timeExpired = 'انتهى الوقت';
+  static const correctAnswerTitle = 'إجابة صحيحة!';
+  static const wrongAnswerTitle = 'إجابة غير صحيحة';
+  static const correctAnswerLabel = 'الإجابة الصحيحة';
+  static const nextQuestion = 'السؤال التالي';
+  static const showResult = 'عرض النتيجة';
+  static const answerQuicklyHint = 'اختر الإجابة بسرعة لتحصل على مكافأة سرعة.';
+  static const botEasy = 'سهل';
+  static const botMedium = 'متوسط';
+  static const botHard = 'صعب';
+  static const botDifficulty = 'مستوى المنافس';
+
+  static const yourScore = 'نقاطك';
+  static const correctAnswers = 'الإجابات الصحيحة';
+  static const wrongAnswers = 'الإجابات الخاطئة';
+  static const earnedXp = 'نقاط الخبرة المكتسبة';
+  static const levelProgress = 'تقدم المستوى';
+  static const shareResult = 'مشاركة النتيجة';
+  static const shareResultSoon = 'مشاركة النتيجة ستضاف لاحقًا';
+  static const wonChallenge = 'فزت بالتحدي!';
+  static const strongRound = 'جولة قوية!';
+  static const roundResult = 'نتيجة الجولة';
+  static const wellDone = 'أحسنت يا';
 }

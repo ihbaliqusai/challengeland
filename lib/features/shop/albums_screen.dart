@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../home/widgets/game_page_shell.dart';
 
 class AlbumsScreen extends StatelessWidget {
@@ -27,20 +28,18 @@ class AlbumsScreen extends StatelessWidget {
                   SizedBox(height: 18),
                   _FeatureLine(
                     icon: Icons.help_rounded,
-                    text: 'Collect and complete albums',
+                    text: AppStrings.collectAlbums,
                   ),
                   _FeatureLine(
                     icon: Icons.swap_horizontal_circle_rounded,
-                    text: 'Trade with friends',
+                    text: AppStrings.tradeWithFriends,
                   ),
                   _FeatureLine(
                     icon: Icons.card_giftcard_rounded,
-                    text: 'Win awesome prizes',
+                    text: AppStrings.winFreePrizes,
                   ),
                   SizedBox(height: 28),
-                  LockedRibbon(
-                    text: 'GET YOUR FIRST STICKER TO UNLOCK STICKER ALBUMS',
-                  ),
+                  LockedRibbon(text: AppStrings.unlockStickerAlbums),
                 ],
               ),
             ),
@@ -123,7 +122,7 @@ class _AlbumCover extends StatelessWidget {
       ),
       child: const Center(
         child: Text(
-          'STICKER\nSEA',
+          AppStrings.stickerSea,
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
@@ -313,7 +312,7 @@ class _AlbumsTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Text(
-      'STICKER ALBUMS',
+      AppStrings.stickerAlbums,
       textAlign: TextAlign.center,
       style: TextStyle(
         color: Color(0xFFFFE33D),

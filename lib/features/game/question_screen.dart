@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_routes.dart';
+import '../../core/constants/app_strings.dart';
 import '../../core/widgets/answer_option_card.dart';
 import '../../core/widgets/app_button.dart';
 import '../../core/widgets/empty_state.dart';
@@ -30,7 +31,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _ensureGame());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_ensureGame());
+    });
   }
 
   Future<void> _ensureGame() async {
@@ -43,15 +46,27 @@ class _QuestionScreenState extends State<QuestionScreen> {
     if (game.questions.isEmpty) {
       await game.startGame(player: user);
     }
+    if (!mounted || game.currentQuestion == null || game.error != null) {
+      return;
+    }
     _startTimer();
   }
 
   void _startTimer() {
     _timer?.cancel();
-    final seconds =
-        context.read<GameProvider>().session?.timerSeconds ?? _remaining;
+    final game = context.read<GameProvider>();
+    if (game.currentQuestion == null ||
+        game.isRevealVisible ||
+        game.isFinished) {
+      return;
+    }
+    final seconds = game.session?.timerSeconds ?? _remaining;
     setState(() => _remaining = seconds);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
       final game = context.read<GameProvider>();
       if (game.isRevealVisible || game.isFinished) {
         timer.cancel();
@@ -59,7 +74,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
       }
       if (_remaining <= 1) {
         timer.cancel();
-        _submit('لم تتم الإجابة');
+        setState(() => _remaining = 0);
+        unawaited(_submitTimeout());
         return;
       }
       setState(() => _remaining--);
@@ -77,7 +93,14 @@ class _QuestionScreenState extends State<QuestionScreen> {
     );
   }
 
+  Future<void> _submitTimeout() async {
+    final user = context.read<AuthProvider>().user;
+    if (user == null) return;
+    await context.read<GameProvider>().submitTimeout(player: user);
+  }
+
   Future<void> _next() async {
+    _timer?.cancel();
     final user = context.read<AuthProvider>().user;
     if (user == null) return;
     final game = context.read<GameProvider>();
@@ -91,10 +114,16 @@ class _QuestionScreenState extends State<QuestionScreen> {
         won: game.playerScore >= game.opponentScore,
       );
       if (!mounted) return;
+      _timer?.cancel();
       Navigator.pushReplacementNamed(context, AppRoutes.gameResult);
     } else {
       _startTimer();
     }
+  }
+
+  void _goHome() {
+    _timer?.cancel();
+    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (_) => false);
   }
 
   @override
@@ -107,12 +136,21 @@ class _QuestionScreenState extends State<QuestionScreen> {
   Widget build(BuildContext context) {
     final game = context.watch<GameProvider>();
     final question = game.currentQuestion;
-    if (game.isLoading) return const Scaffold(body: LoadingView());
+    if (game.isLoading) {
+      return const Scaffold(
+        body: LoadingView(message: AppStrings.loadingQuestions),
+      );
+    }
     if (game.error != null && question == null) {
-      return Scaffold(body: ErrorView(message: game.error!));
+      return Scaffold(
+        body: ErrorView(
+          message: game.error!,
+          onRetry: () => unawaited(_ensureGame()),
+        ),
+      );
     }
     if (question == null) {
-      return const Scaffold(body: EmptyState(message: 'لا توجد أسئلة متاحة'));
+      return const Scaffold(body: EmptyState(message: AppStrings.noQuestions));
     }
 
     return Scaffold(
@@ -152,7 +190,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'جولة سريعة',
+                              AppStrings.quickRound,
                               style: TextStyle(
                                 color: AppColors.challengeGold,
                                 fontWeight: FontWeight.w900,
@@ -165,25 +203,30 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               children: [
                                 ScoreBadge(
                                   score: game.playerScore,
-                                  label: 'أنت',
+                                  label: AppStrings.you,
                                 ),
                                 ScoreBadge(
                                   score: game.opponentScore,
-                                  label: 'المنافس',
+                                  label: AppStrings.opponent,
                                   color: AppColors.challengeCyan,
                                 ),
                               ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${AppStrings.botDifficulty}: ${game.botDifficultyLabel}',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),
                       ),
                       IconButton.filledTonal(
-                        tooltip: 'إغلاق',
-                        onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          AppRoutes.home,
-                          (_) => false,
-                        ),
+                        tooltip: AppStrings.close,
+                        onPressed: _goHome,
                         icon: const Icon(Icons.close_rounded),
                       ),
                     ],
@@ -215,18 +258,32 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     ),
                   );
                 }),
+                if (game.error != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    game.error!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.challengeRed,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
                 if (game.isRevealVisible) ...[
                   const SizedBox(height: 8),
                   _RevealPanel(
-                    isCorrect: question.isCorrect(game.selectedAnswer ?? ''),
+                    isCorrect:
+                        !game.didTimeout &&
+                        question.isCorrect(game.selectedAnswer ?? ''),
+                    title: game.revealMessage,
                     correctAnswer: question.correctAnswer,
                     explanation: question.explanation,
                   ),
                   const SizedBox(height: 16),
                   AppButton(
                     label: game.currentIndex >= game.totalQuestions - 1
-                        ? 'عرض النتيجة'
-                        : 'السؤال التالي',
+                        ? AppStrings.showResult
+                        : AppStrings.nextQuestion,
                     icon: Icons.arrow_back_rounded,
                     variant: AppButtonVariant.gold,
                     onPressed: _next,
@@ -244,11 +301,13 @@ class _QuestionScreenState extends State<QuestionScreen> {
 class _RevealPanel extends StatelessWidget {
   const _RevealPanel({
     required this.isCorrect,
+    required this.title,
     required this.correctAnswer,
     required this.explanation,
   });
 
   final bool isCorrect;
+  final String? title;
   final String correctAnswer;
   final String? explanation;
 
@@ -297,14 +356,22 @@ class _RevealPanel extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isCorrect
-                      ? 'إجابة صحيحة!'
-                      : 'الإجابة الصحيحة: $correctAnswer',
+                  title ??
+                      (isCorrect
+                          ? AppStrings.correctAnswerTitle
+                          : AppStrings.wrongAnswerTitle),
                   style: const TextStyle(
                     fontWeight: FontWeight.w900,
                     fontSize: 17,
                   ),
                 ),
+                if (!isCorrect) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    '${AppStrings.correctAnswerLabel}: $correctAnswer',
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                ],
                 if (explanation != null && explanation!.trim().isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(explanation!, style: const TextStyle(height: 1.45)),

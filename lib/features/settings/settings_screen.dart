@@ -137,10 +137,7 @@ class _SettingsPanel extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _PurpleButton(
-                  label: 'RESTORE PURCHASES',
-                  onPressed: () {},
-                ),
+                child: _PurpleButton(label: 'مزامنة التقدم', onPressed: () {}),
               ),
               const SizedBox(width: 12),
               Expanded(

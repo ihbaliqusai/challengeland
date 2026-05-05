@@ -53,7 +53,7 @@ class GameResultScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: ScoreCard(
-                            title: 'نقاطك',
+                            title: AppStrings.yourScore,
                             score: game.playerScore,
                             highlight: won,
                           ),
@@ -61,7 +61,7 @@ class GameResultScreen extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: ScoreCard(
-                            title: 'المنافس',
+                            title: AppStrings.opponent,
                             score: game.opponentScore,
                           ),
                         ),
@@ -71,9 +71,12 @@ class GameResultScreen extends StatelessWidget {
                     AppCard(
                       child: Column(
                         children: [
-                          _row('الإجابات الصحيحة', '${game.correctAnswers}'),
-                          _row('الإجابات الخاطئة', '${game.wrongAnswers}'),
-                          _row('نقاط الخبرة المكتسبة', '+$xp XP'),
+                          _row(
+                            AppStrings.correctAnswers,
+                            '${game.correctAnswers}',
+                          ),
+                          _row(AppStrings.wrongAnswers, '${game.wrongAnswers}'),
+                          _row(AppStrings.earnedXp, '+$xp XP'),
                           const SizedBox(height: 12),
                           Row(
                             children: [
@@ -84,7 +87,7 @@ class GameResultScreen extends StatelessWidget {
                               const SizedBox(width: 8),
                               const Expanded(
                                 child: Text(
-                                  'تقدم المستوى',
+                                  AppStrings.levelProgress,
                                   style: TextStyle(fontWeight: FontWeight.w900),
                                 ),
                               ),
@@ -131,13 +134,13 @@ class GameResultScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     AppButton(
-                      label: 'مشاركة النتيجة',
+                      label: AppStrings.shareResult,
                       icon: Icons.share_rounded,
                       variant: AppButtonVariant.gold,
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('مشاركة النتيجة ستضاف لاحقًا'),
+                            content: Text(AppStrings.shareResultSoon),
                           ),
                         );
                       },
@@ -207,7 +210,7 @@ class _CelebrationHeader extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            won ? 'فزت بالتحدي!' : 'جولة قوية!',
+            won ? AppStrings.wonChallenge : AppStrings.strongRound,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.w900,
@@ -216,7 +219,9 @@ class _CelebrationHeader extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            username == null ? 'نتيجة الجولة' : 'أحسنت يا $username',
+            username == null
+                ? AppStrings.roundResult
+                : '${AppStrings.wellDone} $username',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: won ? AppColors.challengeDark : Colors.white,

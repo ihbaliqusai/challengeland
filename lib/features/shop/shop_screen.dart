@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../home/widgets/game_page_shell.dart';
 
 class ShopScreen extends StatelessWidget {
@@ -12,15 +13,18 @@ class ShopScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
         children: const [
-          GameSectionTitle('DAILY DEALS', subtitle: 'NEW DEALS IN: 3H 4M 34S'),
+          GameSectionTitle(
+            AppStrings.rewardsTitle,
+            subtitle: AppStrings.rewardsSubtitle,
+          ),
           SizedBox(height: 16),
-          _DailyDealBanner(),
+          _DailyRewardBanner(),
           SizedBox(height: 14),
           _PagerDots(),
           SizedBox(height: 22),
           _OfferGrid(),
           SizedBox(height: 30),
-          GameSectionTitle('COINS'),
+          GameSectionTitle(AppStrings.gameplayCoins),
           SizedBox(height: 18),
           _CoinGrid(),
           SizedBox(height: 24),
@@ -30,8 +34,8 @@ class ShopScreen extends StatelessWidget {
   }
 }
 
-class _DailyDealBanner extends StatelessWidget {
-  const _DailyDealBanner();
+class _DailyRewardBanner extends StatelessWidget {
+  const _DailyRewardBanner();
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +77,7 @@ class _DailyDealBanner extends StatelessWidget {
                         _BeachBall(),
                         SizedBox(height: 8),
                         Text(
-                          'PARADISE\nPACKAGE',
+                          AppStrings.funBundle,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 38,
@@ -102,7 +106,7 @@ class _DailyDealBanner extends StatelessWidget {
               ],
             ),
           ),
-          StoreButton(label: 'JOD 0.840', onPressed: () {}),
+          StoreButton(label: AppStrings.unlockByPlaying, onPressed: () {}),
         ],
       ),
     );
@@ -123,9 +127,9 @@ class _BundleItems extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: const [
-          _BundleCard(icon: Icons.pets_rounded, label: 'x1', locked: true),
+          _BundleCard(icon: Icons.pets_rounded, label: '×١', locked: true),
           _BundleCard(icon: Icons.auto_awesome_rounded, label: ''),
-          _BundleCard(icon: Icons.waves_rounded, label: 'x10', locked: true),
+          _BundleCard(icon: Icons.waves_rounded, label: '×١٠', locked: true),
         ],
       ),
     );
@@ -216,17 +220,20 @@ class _OfferGrid extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       childAspectRatio: 0.78,
       children: const [
-        _StoreCard(icon: Icons.card_giftcard_rounded, label: 'FREE'),
+        _StoreCard(
+          icon: Icons.card_giftcard_rounded,
+          label: AppStrings.freeReward,
+        ),
         _StoreCard(
           icon: Icons.monetization_on_rounded,
-          label: 'INVITE FRIENDS',
+          label: AppStrings.inviteFriends,
           topText: '300',
         ),
         _StoreCard(
           icon: Icons.tag_faces_rounded,
-          label: '150',
+          label: AppStrings.playStreak,
           coinLabel: true,
-          topText: 'x2',
+          topText: '×٢',
         ),
       ],
     );
@@ -248,19 +255,19 @@ class _CoinGrid extends StatelessWidget {
       children: const [
         _StoreCard(
           icon: Icons.toll_rounded,
-          label: 'JOD 0.840',
+          label: AppStrings.earnByPlaying,
           topText: '200',
         ),
         _StoreCard(
-          icon: Icons.paid_rounded,
-          label: 'JOD 2.100',
+          icon: Icons.emoji_events_rounded,
+          label: AppStrings.winStreak,
           topText: '600',
         ),
         _StoreCard(
           icon: Icons.local_movies_rounded,
-          label: 'JOD 4.200',
+          label: AppStrings.dailyReward,
           topText: '1,350',
-          ribbon: 'Most Popular',
+          ribbon: AppStrings.activeReward,
         ),
       ],
     );

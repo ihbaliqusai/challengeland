@@ -2,7 +2,7 @@
 
 Challenge Land
 
-Arabic-first Flutter quiz and challenge MVP. The app is free in version 1: no payments, subscriptions, in-app purchases, paid categories, or billing logic.
+Arabic-first Flutter quiz and challenge MVP. Version 1 uses only free gameplay rewards; coins are earned through play and no real-money flow is implemented.
 
 ## Open In VS Code
 
@@ -60,7 +60,7 @@ See `FIREBASE_SETUP.md`, `FIRESTORE_SCHEMA.md`, and `SECURITY_NOTES.md`.
 - Private room create/join/lobby basics.
 - Team setup placeholder with auto distribution.
 - Daily challenge entry.
-- Leaderboard, profile, friends, search, requests, settings screens.
+- Rewards, leaderboard, profile, friends, search, requests, settings screens.
 - Firebase-ready services and Firestore constants.
 
 ## MVP Limitations
