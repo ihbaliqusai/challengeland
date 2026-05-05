@@ -19,6 +19,8 @@ class AppRoutes {
   static const gameResult = '/game-result';
   static const dailyChallenge = '/daily-challenge';
   static const dailyResult = '/daily-result';
+  static const shop = '/shop';
+  static const albums = '/albums';
   static const leaderboard = '/leaderboard';
   static const profile = '/profile';
   static const matchHistory = '/match-history';

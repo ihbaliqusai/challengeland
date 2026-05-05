@@ -18,6 +18,8 @@ class _BigPlayButtonState extends State<BigPlayButton> {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).height < 700;
+    final width = MediaQuery.sizeOf(context).width;
+
     return AnimatedScale(
       duration: const Duration(milliseconds: 100),
       scale: _pressed ? 0.96 : 1,
@@ -30,104 +32,86 @@ class _BigPlayButtonState extends State<BigPlayButton> {
           onTapUp: (_) => setState(() => _pressed = false),
           onTap: widget.onPressed,
           child: Container(
-            width: compact ? 216 : 248,
-            height: compact ? 68 : 80,
+            width: (width * 0.43).clamp(164.0, compact ? 184.0 : 206.0),
+            height: compact ? 62 : 74,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [AppColors.challengeYellow, AppColors.challengeOrange],
+                colors: [
+                  Color(0xFFFFFF00),
+                  Color(0xFFFFEA00),
+                  Color(0xFFFFA000),
+                ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.white, width: 3),
+              borderRadius: BorderRadius.circular(11),
+              border: Border.all(color: Colors.white, width: 2.4),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.challengeOrange.withValues(alpha: 0.42),
-                  blurRadius: 24,
-                  offset: const Offset(0, 12),
+                  color: Colors.black.withValues(alpha: 0.42),
+                  blurRadius: 0,
+                  offset: const Offset(0, 8),
+                ),
+                BoxShadow(
+                  color: const Color(0xFFFFE100).withValues(alpha: 0.42),
+                  blurRadius: 18,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: Stack(
-              clipBehavior: Clip.none,
               children: [
                 Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
+                  left: 12,
+                  right: 12,
+                  top: 9,
                   child: Container(
-                    height: compact ? 14 : 18,
+                    height: compact ? 11 : 14,
                     decoration: BoxDecoration(
-                      color: AppColors.challengeDark.withValues(alpha: 0.22),
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(compact ? 20 : 22),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 8,
-                  left: 18,
-                  right: 18,
-                  child: Container(
-                    height: 14,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.35),
+                      color: Colors.white.withValues(alpha: 0.42),
                       borderRadius: BorderRadius.circular(999),
                     ),
                   ),
                 ),
                 Positioned(
-                  left: 12,
-                  top: -13,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
                   child: Container(
-                    width: 42,
-                    height: 42,
+                    height: compact ? 14 : 17,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.challengeBlue,
-                      border: Border.all(color: Colors.white, width: 3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.challengeBlue.withValues(
-                            alpha: 0.42,
-                          ),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.play_arrow_rounded,
-                      color: Colors.white,
-                      size: 30,
+                      color: const Color(0xFFB35800).withValues(alpha: 0.56),
+                      borderRadius: BorderRadius.vertical(
+                        bottom: Radius.circular(compact ? 8 : 9),
+                      ),
                     ),
                   ),
                 ),
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 42),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
                         AppStrings.playNow,
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              shadows: const [
-                                Shadow(
-                                  color: AppColors.challengeDark,
-                                  blurRadius: 2,
-                                  offset: Offset(0, 2),
-                                ),
-                                Shadow(
-                                  color: AppColors.challengeDark,
-                                  blurRadius: 8,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: compact ? 28 : 34,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0,
+                          shadows: const [
+                            Shadow(
+                              color: AppColors.challengeDark,
+                              blurRadius: 0,
+                              offset: Offset(2, 2),
                             ),
+                            Shadow(
+                              color: AppColors.challengeDark,
+                              blurRadius: 2,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

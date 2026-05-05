@@ -7,6 +7,7 @@ import '../../state/home_provider.dart';
 import 'widgets/big_play_button.dart';
 import 'widgets/bottom_game_nav.dart';
 import 'widgets/game_hud.dart';
+import 'widgets/game_page_shell.dart';
 import 'widgets/home_action_drawer.dart';
 import 'widgets/home_scene.dart';
 import 'widgets/progress_unlock_banner.dart';
@@ -38,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final home = context.watch<HomeProvider>();
     final height = MediaQuery.sizeOf(context).height;
     final compact = height < 700;
-    final safeBottom = MediaQuery.paddingOf(context).bottom;
+    final padding = MediaQuery.paddingOf(context);
 
     return Scaffold(
       body: Stack(
@@ -59,18 +60,18 @@ class _HomeScreenState extends State<HomeScreen> {
           Positioned(
             left: 0,
             right: 0,
-            top: MediaQuery.paddingOf(context).top + (compact ? 88 : 104),
+            top: padding.top + (compact ? 70 : 82),
             child: ProgressUnlockBanner(progress: home.nextUnlockProgress),
           ),
           PositionedDirectional(
-            end: 14,
-            top: height * (compact ? 0.48 : 0.50),
+            end: -1,
+            top: height * (compact ? 0.35 : 0.36),
             child: const SideBoostButton(),
           ),
           Positioned(
             left: 0,
             right: 0,
-            bottom: safeBottom + (compact ? 98 : 120),
+            bottom: padding.bottom + (compact ? 104 : 124),
             child: Center(
               child: BigPlayButton(
                 onPressed: () =>
@@ -89,13 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   home.selectBottomTab(index);
                   return;
                 }
-                final routes = {
-                  1: AppRoutes.friends,
-                  3: AppRoutes.dailyChallenge,
-                  4: AppRoutes.profile,
-                };
-                final route = routes[index];
-                if (route != null) Navigator.pushNamed(context, route);
+                goToGameTab(context, index);
               },
             ),
           ),

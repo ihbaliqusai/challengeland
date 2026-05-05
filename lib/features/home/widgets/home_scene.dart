@@ -1,6 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
 import 'mascot_avatar.dart';
 
 class HomeScene extends StatelessWidget {
@@ -13,575 +14,603 @@ class HomeScene extends StatelessWidget {
         final height = constraints.maxHeight;
         final width = constraints.maxWidth;
         final compact = height < 700;
-        final wallTop = compact ? 164.0 : 190.0;
-        final mascotTop = (height * (compact ? 0.36 : 0.38)).clamp(
-          compact ? 238.0 : 282.0,
-          compact ? 308.0 : 350.0,
+        final mascotSize = (width * (compact ? 0.68 : 0.74)).clamp(
+          compact ? 230.0 : 270.0,
+          compact ? 270.0 : 318.0,
         );
-        final lowerObjectsBottom = compact ? 106.0 : 132.0;
+        final mascotTop = (height * (compact ? 0.33 : 0.35)).clamp(
+          compact ? 218.0 : 256.0,
+          compact ? 270.0 : 305.0,
+        );
 
         return Stack(
           fit: StackFit.expand,
           children: [
-            const _ArenaBackground(),
-            const _FloatingParticles(),
+            const _GymBackground(),
+            const _SoftLightBeams(),
             Positioned(
-              top: wallTop,
-              right: 18,
-              child: _poster(
-                icon: Icons.quiz_rounded,
-                title: 'لوحة الأسئلة',
-                color: AppColors.challengeCyan,
-                compact: compact,
-              ),
+              top: height * (compact ? 0.17 : 0.16),
+              left: width * 0.08,
+              child: _WallShelf(compact: compact),
             ),
             Positioned(
-              top: wallTop + (compact ? 28 : 38),
-              left: 18,
-              child: _poster(
-                icon: Icons.emoji_events_rounded,
-                title: 'أبطال اليوم',
-                color: AppColors.challengeGold,
-                compact: compact,
-              ),
+              top: height * (compact ? 0.20 : 0.22),
+              right: width * 0.22,
+              child: _ChampionPoster(compact: compact),
             ),
             Positioned(
-              top: wallTop + (compact ? 128 : 150),
-              right: 0,
-              child: _shelf(compact: compact),
-            ),
-            Positioned(
-              top: wallTop + (compact ? 120 : 148),
-              left: 0,
-              child: _speakerTower(compact: compact),
-            ),
-            Positioned(
-              bottom: lowerObjectsBottom,
-              left: 16,
-              child: _quizConsole(compact: compact),
-            ),
-            Positioned(
-              bottom: lowerObjectsBottom - 4,
-              right: 16,
-              child: _stackedTokens(compact: compact),
-            ),
-            Positioned(
-              top: mascotTop - (compact ? 4 : 10),
+              top: mascotTop + (compact ? 4 : 10),
               left: 0,
               right: 0,
-              child: Center(child: _mascotGlow(compact: compact)),
+              child: Center(
+                child: _SquatRack(
+                  width: mascotSize * 0.88,
+                  height: mascotSize * 0.96,
+                ),
+              ),
             ),
             Positioned(
               top: mascotTop,
               left: 0,
               right: 0,
-              child: Center(child: MascotAvatar(size: compact ? 188 : 224)),
+              child: Center(child: MascotAvatar(size: mascotSize)),
             ),
             Positioned(
-              top: mascotTop + (compact ? 14 : 20),
-              right: width * 0.20,
-              child: _floatingIcon(
-                Icons.star_rounded,
-                AppColors.challengeYellow,
-                compact,
-              ),
+              left: compact ? -24 : -28,
+              bottom: compact ? 92 : 122,
+              child: _LeftBench(compact: compact),
             ),
             Positioned(
-              top: mascotTop + (compact ? 90 : 104),
-              left: width * 0.20,
-              child: _floatingIcon(
-                Icons.emoji_events_rounded,
-                AppColors.challengeGold,
-                compact,
-              ),
-            ),
-            Positioned(
-              top: mascotTop + (compact ? 130 : 154),
-              right: width * 0.24,
-              child: _floatingIcon(
-                Icons.bolt_rounded,
-                AppColors.challengeCyan,
-                compact,
-              ),
-            ),
-            Positioned(
-              top: wallTop - 20,
-              left: width * 0.12,
-              child: _lightBeam(AppColors.challengePink, compact: compact),
-            ),
-            Positioned(
-              top: wallTop - 34,
-              right: width * 0.14,
-              child: _lightBeam(AppColors.challengeCyan, compact: compact),
+              right: compact ? -30 : -18,
+              bottom: compact ? 92 : 118,
+              child: _ForegroundWeights(compact: compact),
             ),
           ],
         );
       },
     );
   }
-
-  Widget _poster({
-    required IconData icon,
-    required String title,
-    required Color color,
-    required bool compact,
-  }) {
-    return Container(
-      width: compact ? 102 : 120,
-      padding: EdgeInsets.all(compact ? 10 : 12),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.challengeCard.withValues(alpha: 0.88),
-            AppColors.challengeNavy.withValues(alpha: 0.8),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: color.withValues(alpha: 0.56), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.24),
-            blurRadius: 12,
-            offset: const Offset(0, 7),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: compact ? 25 : 30),
-          const SizedBox(height: 6),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: compact ? 11 : 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _shelf({required bool compact}) {
-    return SizedBox(
-      width: compact ? 118 : 140,
-      height: compact ? 66 : 78,
-      child: Stack(
-        children: [
-          Positioned(
-            bottom: 6,
-            child: Container(
-              width: compact ? 118 : 140,
-              height: 12,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.challengeOrange, AppColors.challengeGold],
-                ),
-                borderRadius: BorderRadius.circular(999),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.22),
-                    blurRadius: 8,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            right: 16,
-            top: 0,
-            child: _shelfIcon(
-              Icons.emoji_events_rounded,
-              AppColors.challengeGold,
-              compact,
-            ),
-          ),
-          Positioned(
-            right: compact ? 52 : 60,
-            top: 10,
-            child: _shelfIcon(
-              Icons.military_tech_rounded,
-              AppColors.challengeCyan,
-              compact,
-            ),
-          ),
-          Positioned(
-            left: 12,
-            top: 4,
-            child: _shelfIcon(
-              Icons.star_rounded,
-              AppColors.challengeYellow,
-              compact,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _shelfIcon(IconData icon, Color color, bool compact) {
-    return Icon(icon, color: color, size: compact ? 28 : 34);
-  }
-
-  Widget _speakerTower({required bool compact}) {
-    return Container(
-      width: compact ? 48 : 56,
-      height: compact ? 118 : 142,
-      decoration: BoxDecoration(
-        color: AppColors.challengeNavy.withValues(alpha: 0.9),
-        borderRadius: const BorderRadius.horizontal(right: Radius.circular(16)),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(
-          3,
-          (_) => Container(
-            width: compact ? 24 : 30,
-            height: compact ? 24 : 30,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.challengeDark,
-              border: Border.all(color: AppColors.challengeCyan, width: 2),
-            ),
-            child: Center(
-              child: Container(
-                width: compact ? 8 : 10,
-                height: compact ? 8 : 10,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.challengeCyan,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _quizConsole({required bool compact}) {
-    return Container(
-      width: compact ? 88 : 108,
-      height: compact ? 76 : 92,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.challengeNavy, AppColors.challengeCard],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.challengeBlue, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.challengeBlue.withValues(alpha: 0.22),
-            blurRadius: 14,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.sports_esports_rounded,
-            color: AppColors.challengeCyan,
-            size: compact ? 28 : 34,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'جاهز؟',
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: compact ? 12 : 14,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _stackedTokens({required bool compact}) {
-    return SizedBox(
-      width: compact ? 94 : 112,
-      height: compact ? 70 : 84,
-      child: Stack(
-        children: List.generate(4, (index) {
-          return Positioned(
-            bottom: index * (compact ? 8 : 10),
-            right: index * (compact ? 11 : 13),
-            child: Container(
-              width: compact ? 48 : 56,
-              height: compact ? 48 : 56,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: index.isEven
-                      ? const [
-                          AppColors.challengeYellow,
-                          AppColors.challengeGold,
-                        ]
-                      : const [
-                          AppColors.challengeGold,
-                          AppColors.challengeOrange,
-                        ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                border: Border.all(color: Colors.white, width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.25),
-                    blurRadius: 8,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.bolt_rounded,
-                color: AppColors.challengeDark,
-              ),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
-  Widget _mascotGlow({required bool compact}) {
-    return Container(
-      width: compact ? 206 : 254,
-      height: compact ? 206 : 254,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [
-            AppColors.challengeCyan.withValues(alpha: 0.26),
-            AppColors.challengePurple.withValues(alpha: 0.18),
-            Colors.transparent,
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _floatingIcon(IconData icon, Color color, bool compact) {
-    return Container(
-      width: compact ? 34 : 40,
-      height: compact ? 34 : 40,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColors.challengeNavy.withValues(alpha: 0.72),
-        border: Border.all(color: color.withValues(alpha: 0.72), width: 1.5),
-        boxShadow: [
-          BoxShadow(color: color.withValues(alpha: 0.28), blurRadius: 14),
-        ],
-      ),
-      child: Icon(icon, color: color, size: compact ? 21 : 24),
-    );
-  }
-
-  Widget _lightBeam(Color color, {required bool compact}) {
-    return Container(
-      width: compact ? 38 : 46,
-      height: compact ? 104 : 130,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [color.withValues(alpha: 0.36), color.withValues(alpha: 0.0)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: BorderRadius.circular(999),
-      ),
-    );
-  }
 }
 
-class _FloatingParticles extends StatefulWidget {
-  const _FloatingParticles();
-
-  @override
-  State<_FloatingParticles> createState() => _FloatingParticlesState();
-}
-
-class _FloatingParticlesState extends State<_FloatingParticles>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 5),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+class _GymBackground extends StatelessWidget {
+  const _GymBackground();
 
   @override
   Widget build(BuildContext context) {
-    final colors = [
-      AppColors.challengeCyan,
-      AppColors.challengeGold,
-      AppColors.challengePink,
-      AppColors.challengePurple,
-    ];
-    return IgnorePointer(
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          final size = MediaQuery.sizeOf(context);
-          return Stack(
-            children: List.generate(14, (index) {
-              final progress = (_controller.value + (index * 0.071)) % 1.0;
-              final left = (index * 53 % size.width).toDouble();
-              final top =
-                  size.height * (0.18 + (index % 5) * 0.105) - (progress * 18);
-              final color = colors[index % colors.length];
-              return Positioned(
-                left: left,
-                top: top,
-                child: Opacity(
-                  opacity: 0.18 + (0.18 * (1 - progress)),
-                  child: Container(
-                    width: index.isEven ? 5 : 7,
-                    height: index.isEven ? 5 : 7,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: color,
-                      boxShadow: [
-                        BoxShadow(
-                          color: color.withValues(alpha: 0.35),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }),
-          );
-        },
-      ),
-    );
+    return CustomPaint(painter: _GymBackgroundPainter());
   }
 }
 
-class _ArenaBackground extends StatelessWidget {
-  const _ArenaBackground();
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(painter: _ArenaPainter());
-  }
-}
-
-class _ArenaPainter extends CustomPainter {
+class _GymBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint();
-    final background = Rect.fromLTWH(0, 0, size.width, size.height);
+    final paint = Paint()..style = PaintingStyle.fill;
+    final wall = Rect.fromLTWH(0, 0, size.width, size.height * 0.62);
     paint.shader = const LinearGradient(
-      colors: [Color(0xFF0B1024), AppColors.challengeDark, Color(0xFF29115F)],
+      colors: [Color(0xFFB996CE), Color(0xFFA78DC3), Color(0xFF8F7CAC)],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-    ).createShader(background);
-    canvas.drawRect(background, paint);
-
+    ).createShader(wall);
+    canvas.drawRect(wall, paint);
     paint.shader = null;
-    paint.color = AppColors.challengeCard.withValues(alpha: 0.72);
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          18,
-          size.height * 0.20,
-          size.width - 36,
-          size.height * 0.45,
-        ),
-        const Radius.circular(30),
-      ),
+
+    paint.color = const Color(0xFF765995).withValues(alpha: 0.54);
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, size.height * 0.10)
+        ..lineTo(size.width * 0.22, size.height * 0.24)
+        ..lineTo(size.width * 0.12, size.height * 0.62)
+        ..lineTo(0, size.height * 0.72)
+        ..close(),
+      paint,
+    );
+    paint.color = const Color(0xFF72578F).withValues(alpha: 0.38);
+    canvas.drawPath(
+      Path()
+        ..moveTo(size.width, size.height * 0.20)
+        ..lineTo(size.width * 0.86, size.height * 0.28)
+        ..lineTo(size.width * 0.88, size.height * 0.62)
+        ..lineTo(size.width, size.height * 0.58)
+        ..close(),
       paint,
     );
 
-    paint.color = AppColors.challengeBlue.withValues(alpha: 0.18);
-    paint.strokeWidth = 2;
-    for (var i = 0; i < 5; i++) {
-      final y = size.height * 0.29 + (i * 52);
-      canvas.drawLine(Offset(28, y), Offset(size.width - 28, y), paint);
-    }
-    for (var i = 0; i < 8; i++) {
-      final x = 30 + (i * (size.width - 60) / 7);
-      canvas.drawLine(
-        Offset(x, size.height * 0.62),
-        Offset(x + (size.width * 0.08), size.height * 0.92),
-        paint,
-      );
-    }
-
-    paint.color = AppColors.challengePurple.withValues(alpha: 0.2);
+    paint.color = const Color(0xFFE7D39D);
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          size.width * 0.17,
-          size.height * 0.22,
-          size.width * 0.66,
-          20,
-        ),
+        Rect.fromLTWH(0, size.height * 0.40, size.width * 0.44, 9),
+        const Radius.circular(999),
+      ),
+      paint,
+    );
+    paint.color = const Color(0xFF9B784A);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, size.height * 0.414, size.width * 0.43, 6),
         const Radius.circular(999),
       ),
       paint,
     );
 
-    paint.color = AppColors.challengeCard;
-    final floor = Path()
-      ..moveTo(0, size.height * 0.65)
-      ..lineTo(size.width, size.height * 0.61)
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
-      ..close();
-    canvas.drawPath(floor, paint);
+    paint.color = const Color(0xFF544762);
+    canvas.drawRect(
+      Rect.fromLTWH(0, size.height * 0.60, size.width, size.height * 0.40),
+      paint,
+    );
+    paint.shader =
+        const LinearGradient(
+          colors: [Color(0xFF7E788E), Color(0xFF4F4A59)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ).createShader(
+          Rect.fromLTWH(0, size.height * 0.58, size.width, size.height),
+        );
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, size.height * 0.58)
+        ..lineTo(size.width, size.height * 0.55)
+        ..lineTo(size.width, size.height)
+        ..lineTo(0, size.height)
+        ..close(),
+      paint,
+    );
+    paint.shader = null;
 
-    paint.color = Colors.black.withValues(alpha: 0.25);
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(size.width / 2, size.height * 0.72),
-        width: size.width * 0.82,
-        height: 82,
+    paint.color = Colors.black.withValues(alpha: 0.18);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(size.width * 0.50, size.height * 0.63),
+          width: size.width * 0.58,
+          height: size.height * 0.12,
+        ),
+        const Radius.circular(8),
+      ),
+      paint,
+    );
+    paint.color = const Color(0xFF60566D);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(size.width * 0.50, size.height * 0.62),
+          width: size.width * 0.55,
+          height: size.height * 0.11,
+        ),
+        const Radius.circular(8),
       ),
       paint,
     );
 
-    paint.color = AppColors.challengeCyan.withValues(alpha: 0.2);
-    canvas.drawCircle(Offset(size.width * 0.2, size.height * 0.18), 80, paint);
-    paint.color = AppColors.challengePink.withValues(alpha: 0.15);
-    canvas.drawCircle(
-      Offset(size.width * 0.83, size.height * 0.25),
-      110,
+    paint.color = Colors.black.withValues(alpha: 0.18);
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(size.width * 0.50, size.height * 0.72),
+        width: size.width * 0.54,
+        height: 44,
+      ),
       paint,
     );
 
-    paint.color = AppColors.challengeGold.withValues(alpha: 0.08);
-    for (var i = 0; i < 7; i++) {
-      canvas.drawCircle(
-        Offset(
-          24 + (i * size.width / 6),
-          size.height * 0.67 + (i.isEven ? 8 : 0),
+    paint.color = Colors.white.withValues(alpha: 0.11);
+    canvas.drawPath(
+      Path()
+        ..moveTo(size.width * 0.06, size.height * 0.12)
+        ..lineTo(size.width * 0.22, size.height)
+        ..lineTo(size.width * 0.33, size.height)
+        ..lineTo(size.width * 0.16, size.height * 0.12)
+        ..close(),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _SoftLightBeams extends StatelessWidget {
+  const _SoftLightBeams();
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: CustomPaint(
+        painter: _LightBeamPainter(),
+        child: const SizedBox.expand(),
+      ),
+    );
+  }
+}
+
+class _LightBeamPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..style = PaintingStyle.fill;
+    paint.shader = LinearGradient(
+      colors: [
+        Colors.white.withValues(alpha: 0.28),
+        Colors.white.withValues(alpha: 0.02),
+      ],
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+    ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    canvas.drawPath(
+      Path()
+        ..moveTo(size.width * 0.39, size.height * 0.11)
+        ..lineTo(size.width * 0.54, size.height * 0.11)
+        ..lineTo(size.width * 0.64, size.height * 0.72)
+        ..lineTo(size.width * 0.18, size.height * 0.96)
+        ..close(),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _WallShelf extends StatelessWidget {
+  const _WallShelf({required this.compact});
+
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: compact ? 120 : 146,
+      height: compact ? 62 : 76,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 12,
+            child: Container(
+              height: compact ? 9 : 11,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE6C983),
+                borderRadius: BorderRadius.circular(999),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.20),
+                    blurRadius: 4,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: compact ? 20 : 27,
+            bottom: compact ? 18 : 22,
+            child: Icon(
+              Icons.emoji_events_rounded,
+              color: const Color(0xFFFFC12F),
+              size: compact ? 45 : 56,
+              shadows: const [
+                Shadow(
+                  color: Color(0xFF8B5300),
+                  blurRadius: 2,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChampionPoster extends StatelessWidget {
+  const _ChampionPoster({required this.compact});
+
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final width = compact ? 92.0 : 116.0;
+    return Transform.rotate(
+      angle: 0.012,
+      child: Container(
+        width: width,
+        height: compact ? 84 : 108,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF3D2676), Color(0xFF9E48CD)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: const Color(0xFF2C174B), width: 3),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.24),
+              blurRadius: 7,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        3,
-        paint,
-      );
+        child: Center(
+          child: Icon(
+            Icons.emoji_events_rounded,
+            color: const Color(0xFFFFD06E),
+            size: compact ? 52 : 68,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SquatRack extends StatelessWidget {
+  const _SquatRack({required this.width, required this.height});
+
+  final double width;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      height: height,
+      child: CustomPaint(painter: _SquatRackPainter()),
+    );
+  }
+}
+
+class _SquatRackPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    final left = size.width * 0.14;
+    final right = size.width * 0.86;
+    final top = size.height * 0.05;
+    final bottom = size.height * 0.88;
+
+    paint
+      ..strokeWidth = 9
+      ..color = const Color(0xFF19191F);
+    canvas.drawLine(Offset(left, top), Offset(left, bottom), paint);
+    canvas.drawLine(Offset(right, top), Offset(right, bottom), paint);
+    canvas.drawLine(
+      Offset(left - 18, bottom),
+      Offset(left + 24, bottom + 8),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(right - 24, bottom + 8),
+      Offset(right + 18, bottom),
+      paint,
+    );
+
+    paint
+      ..strokeWidth = 4
+      ..color = const Color(0xFF4E4F62);
+    canvas.drawLine(Offset(left, top + 5), Offset(left, bottom - 8), paint);
+    canvas.drawLine(Offset(right, top + 5), Offset(right, bottom - 8), paint);
+
+    final holePaint = Paint()..color = const Color(0xFF6E6F7E);
+    for (var i = 0; i < 7; i++) {
+      final y = top + 16 + (i * (bottom - top - 42) / 6);
+      canvas.drawCircle(Offset(left, y), 3.2, holePaint);
+      canvas.drawCircle(Offset(right, y), 3.2, holePaint);
     }
+
+    paint
+      ..strokeWidth = 8
+      ..color = const Color(0xFF2B2833);
+    canvas.drawLine(
+      Offset(size.width * 0.20, size.height * 0.42),
+      Offset(size.width * 0.80, size.height * 0.42),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _LeftBench extends StatelessWidget {
+  const _LeftBench({required this.compact});
+
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: compact ? 112 : 138,
+      height: compact ? 126 : 154,
+      child: CustomPaint(painter: _LeftBenchPainter()),
+    );
+  }
+}
+
+class _LeftBenchPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..style = PaintingStyle.fill;
+    paint.color = const Color(0xFF7F3146);
+    canvas.drawPath(
+      Path()
+        ..moveTo(size.width * 0.12, size.height * 0.18)
+        ..lineTo(size.width * 0.92, size.height * 0.76)
+        ..lineTo(size.width * 0.68, size.height * 0.88)
+        ..lineTo(size.width * 0.02, size.height * 0.34)
+        ..close(),
+      paint,
+    );
+    paint.color = const Color(0xFFBA6B43);
+    canvas.drawPath(
+      Path()
+        ..moveTo(size.width * 0.10, size.height * 0.34)
+        ..lineTo(size.width * 0.76, size.height * 0.88)
+        ..lineTo(size.width * 0.60, size.height)
+        ..lineTo(0, size.height * 0.46)
+        ..close(),
+      paint,
+    );
+    paint.color = Colors.black.withValues(alpha: 0.20);
+    canvas.drawPath(
+      Path()
+        ..moveTo(size.width * 0.04, size.height * 0.49)
+        ..lineTo(size.width * 0.60, size.height * 0.98)
+        ..lineTo(size.width * 0.50, size.height)
+        ..lineTo(0, size.height * 0.58)
+        ..close(),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _ForegroundWeights extends StatelessWidget {
+  const _ForegroundWeights({required this.compact});
+
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: compact ? 170 : 214,
+      height: compact ? 150 : 186,
+      child: CustomPaint(painter: _ForegroundWeightsPainter()),
+    );
+  }
+}
+
+class _ForegroundWeightsPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..style = PaintingStyle.fill;
+    final baseY = size.height * 0.68;
+
+    paint.color = const Color(0xFF111017);
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(size.width * 0.60, baseY),
+        width: size.width * 0.74,
+        height: size.height * 0.24,
+      ),
+      paint,
+    );
+    paint.color = const Color(0xFF24212A);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(size.width * 0.60, baseY - 9),
+          width: size.width * 0.72,
+          height: size.height * 0.24,
+        ),
+        Radius.circular(size.height * 0.08),
+      ),
+      paint,
+    );
+
+    _drawKettlebell(
+      canvas,
+      Offset(size.width * 0.54, size.height * 0.30),
+      size,
+    );
+    _drawBarbell(canvas, size);
+  }
+
+  void _drawKettlebell(Canvas canvas, Offset center, Size size) {
+    final paint = Paint()..style = PaintingStyle.fill;
+    final r = size.width * 0.22;
+
+    paint
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = r * 0.22
+      ..strokeCap = StrokeCap.round
+      ..color = const Color(0xFF7F6BCB);
+    canvas.drawArc(
+      Rect.fromCenter(
+        center: center.translate(0, -r * 0.16),
+        width: r * 1.55,
+        height: r * 1.35,
+      ),
+      math.pi,
+      math.pi,
+      false,
+      paint,
+    );
+
+    paint
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xFF7868C9);
+    canvas.drawCircle(center.translate(0, r * 0.40), r, paint);
+    paint.color = const Color(0xFF533187);
+    canvas.drawPath(
+      Path()
+        ..moveTo(center.dx - r * 0.60, center.dy + r * 0.10)
+        ..quadraticBezierTo(
+          center.dx + r * 0.20,
+          center.dy + r * 1.50,
+          center.dx + r * 0.90,
+          center.dy + r * 0.65,
+        )
+        ..quadraticBezierTo(
+          center.dx + r * 0.70,
+          center.dy + r * 1.25,
+          center.dx - r * 0.45,
+          center.dy + r * 1.18,
+        )
+        ..close(),
+      paint,
+    );
+
+    paint
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = r * 0.10
+      ..color = const Color(0xFF1546A7);
+    final star = Path();
+    for (var i = 0; i < 10; i++) {
+      final radius = i.isEven ? r * 0.52 : r * 0.24;
+      final angle = -math.pi / 2 + (math.pi * 2 * i / 10);
+      final point = Offset(
+        center.dx + math.cos(angle) * radius,
+        center.dy + r * 0.42 + math.sin(angle) * radius,
+      );
+      if (i == 0) {
+        star.moveTo(point.dx, point.dy);
+      } else {
+        star.lineTo(point.dx, point.dy);
+      }
+    }
+    star.close();
+    canvas.drawPath(star, paint);
+  }
+
+  void _drawBarbell(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 13
+      ..color = const Color(0xFF3D3B52);
+    final y = size.height * 0.92;
+    canvas.drawLine(
+      Offset(size.width * 0.18, y),
+      Offset(size.width * 1.02, y),
+      paint,
+    );
+    paint
+      ..strokeWidth = 35
+      ..color = const Color(0xFF1F7BEE);
+    canvas.drawLine(
+      Offset(size.width * 0.16, y),
+      Offset(size.width * 0.22, y),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width * 0.84, y),
+      Offset(size.width * 0.90, y),
+      paint,
+    );
   }
 
   @override

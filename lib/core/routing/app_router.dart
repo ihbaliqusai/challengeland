@@ -23,6 +23,8 @@ import '../../features/rooms/create_room_screen.dart';
 import '../../features/rooms/join_room_screen.dart';
 import '../../features/rooms/room_lobby_screen.dart';
 import '../../features/rooms/team_setup_screen.dart';
+import '../../features/shop/albums_screen.dart';
+import '../../features/shop/shop_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/splash/splash_screen.dart';
 import '../constants/app_routes.dart';
@@ -51,6 +53,8 @@ class AppRouter {
       AppRoutes.gameResult => const GameResultScreen(),
       AppRoutes.dailyChallenge => const DailyChallengeScreen(),
       AppRoutes.dailyResult => const DailyResultScreen(),
+      AppRoutes.shop => const ShopScreen(),
+      AppRoutes.albums => const AlbumsScreen(),
       AppRoutes.leaderboard => const LeaderboardScreen(),
       AppRoutes.profile => const ProfileScreen(),
       AppRoutes.matchHistory => const MatchHistoryScreen(),
