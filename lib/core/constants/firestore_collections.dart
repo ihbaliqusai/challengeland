@@ -18,4 +18,5 @@ class FirestoreCollections {
   static const friends = 'friends';
   static const items = 'items';
   static const matchHistory = 'match_history';
+  static const challengeCards = 'challenge_cards';
 }

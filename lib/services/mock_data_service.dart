@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 import '../core/constants/app_config.dart';
 import '../core/utils/date_utils.dart';
 import '../models/category.dart';
+import '../models/challenge_card.dart';
 import '../models/daily_challenge.dart';
 import '../models/game_session.dart';
 import '../models/leaderboard_entry.dart';
@@ -264,5 +265,36 @@ class MockDataService {
       isActive: true,
       createdAt: DateTime.now(),
     );
+  }
+
+  Future<List<ChallengeCard>> getSampleChallengeCards({
+    String? categoryId,
+    ChallengeCardType? type,
+    ChallengeDifficulty? difficulty,
+    int? limit,
+  }) async {
+    final text = await rootBundle.loadString(
+      'assets/sample_data/challenge_cards.json',
+    );
+    final data = jsonDecode(text) as Map<String, dynamic>;
+    final list = data['cards'] as List<dynamic>;
+    var cards = list
+        .whereType<Map<String, dynamic>>()
+        .map(ChallengeCard.fromJson)
+        .where((c) => c.isActive)
+        .toList();
+
+    if (categoryId != null) {
+      cards = cards.where((c) => c.categoryId == categoryId).toList();
+    }
+    if (type != null) {
+      cards = cards.where((c) => c.type == type).toList();
+    }
+    if (difficulty != null) {
+      cards = cards.where((c) => c.difficulty == difficulty).toList();
+    }
+
+    cards.shuffle(_random);
+    return cards.take(limit ?? cards.length).toList(growable: false);
   }
 }
