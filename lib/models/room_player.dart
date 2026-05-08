@@ -110,10 +110,8 @@ class RoomPlayer {
     );
   }
 
-  RoomPlayer addPersonalPoints(int points) => copyWith(
-    personalScore: personalScore + points,
-    score: score + points,
-  );
+  RoomPlayer addPersonalPoints(int points) =>
+      copyWith(personalScore: personalScore + points, score: score + points);
 
   static PlayerRole _parseRole(String? s) {
     switch (s) {

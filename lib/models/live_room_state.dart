@@ -25,7 +25,7 @@ class LiveRoomState {
   final int currentRound;
   final int roundDuration;
   final String? currentDescriber;
-  final int? roundStartedAt;   // epoch ms (ServerValue.timestamp)
+  final int? roundStartedAt; // epoch ms (ServerValue.timestamp)
 
   final Map<String, PlayerLiveState> players;
   final Map<String, AnswerState> answers;
@@ -51,16 +51,10 @@ class LiveRoomState {
       currentDescriber: stateMap['currentDescriber']?.toString(),
       roundStartedAt: (stateMap['roundStartedAt'] as num?)?.toInt(),
       players: playersMap.map(
-        (uid, val) => MapEntry(
-          uid,
-          PlayerLiveState.fromRtdbMap(_asMap(val)),
-        ),
+        (uid, val) => MapEntry(uid, PlayerLiveState.fromRtdbMap(_asMap(val))),
       ),
       answers: answersMap.map(
-        (uid, val) => MapEntry(
-          uid,
-          AnswerState.fromRtdbMap(_asMap(val)),
-        ),
+        (uid, val) => MapEntry(uid, AnswerState.fromRtdbMap(_asMap(val))),
       ),
       currentCard: cardMap.isEmpty ? null : ChallengeCard.fromJson(cardMap),
       hostUid: map['hostUid']?.toString(),
@@ -136,8 +130,8 @@ class AnswerState {
 
   final String uid;
   final String text;
-  final int submittedAt;  // epoch ms
-  final bool? isCorrect;  // null = لم يُحكم عليها بعد
+  final int submittedAt; // epoch ms
+  final bool? isCorrect; // null = لم يُحكم عليها بعد
 
   bool get isPending => isCorrect == null;
 

@@ -29,7 +29,7 @@ class TeamCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          Text('عدد اللاعبين: ${team.playerIds.length}'),
+          Text('عدد اللاعبين: ${team.playerCount}'),
         ],
       ),
     );

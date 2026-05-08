@@ -91,7 +91,8 @@ class _LiveGameScreenState extends State<LiveGameScreen>
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is Map) {
       _room = args['room'] as Room?;
-      _currentUid = (args['currentUid'] as String?) ??
+      _currentUid =
+          (args['currentUid'] as String?) ??
           context.read<AuthProvider>().user?.uid ??
           '';
     }
@@ -117,8 +118,9 @@ class _LiveGameScreenState extends State<LiveGameScreen>
     }
 
     // احتفال عند ظهور إجابة صحيحة جديدة
-    final correctNow =
-        next.answers.values.where((a) => a.isCorrect == true).length;
+    final correctNow = next.answers.values
+        .where((a) => a.isCorrect == true)
+        .length;
     if (correctNow > _prevCorrectCount) {
       _prevCorrectCount = correctNow;
       final latestCorrect = next.answers.values
@@ -135,11 +137,15 @@ class _LiveGameScreenState extends State<LiveGameScreen>
       _roundResultShown = next.currentRound;
       Future.microtask(() {
         if (!mounted) return;
-        Navigator.pushNamed(context, AppRoutes.roundResult, arguments: {
-          'room': _room!,
-          'liveState': next,
-          'currentUid': _currentUid,
-        });
+        Navigator.pushNamed(
+          context,
+          AppRoutes.roundResult,
+          arguments: {
+            'room': _room!,
+            'liveState': next,
+            'currentUid': _currentUid,
+          },
+        );
       });
     }
 
@@ -168,8 +174,10 @@ class _LiveGameScreenState extends State<LiveGameScreen>
       if (rem == 0 && !_didVibrate) {
         _didVibrate = true;
         HapticFeedback.heavyImpact();
-        Future.delayed(const Duration(milliseconds: 150),
-            () => HapticFeedback.heavyImpact());
+        Future.delayed(
+          const Duration(milliseconds: 150),
+          () => HapticFeedback.heavyImpact(),
+        );
       }
 
       // نغمة + اهتزاز خفيف في آخر 10 ثوانٍ
@@ -221,10 +229,11 @@ class _LiveGameScreenState extends State<LiveGameScreen>
     final s = _state;
     final room = _room;
     if (s == null || room == null) return;
-    final pending = s.answers.entries
-        .where((e) => e.value.isPending && e.value.text != '__skip__')
-        .toList()
-      ..sort((a, b) => b.value.submittedAt.compareTo(a.value.submittedAt));
+    final pending =
+        s.answers.entries
+            .where((e) => e.value.isPending && e.value.text != '__skip__')
+            .toList()
+          ..sort((a, b) => b.value.submittedAt.compareTo(a.value.submittedAt));
     if (pending.isEmpty) return;
     await _rtdb.markAnswer(room.id, pending.first.key, isCorrect: true);
   }
@@ -304,8 +313,9 @@ class _LiveGameScreenState extends State<LiveGameScreen>
             _RoundResultSheet(
               round: s.currentRound,
               total: _room!.totalRounds,
-              correctCount:
-                  s.answers.values.where((a) => a.isCorrect == true).length,
+              correctCount: s.answers.values
+                  .where((a) => a.isCorrect == true)
+                  .length,
             ),
         ],
       ),
@@ -340,10 +350,7 @@ class _LiveGameScreenState extends State<LiveGameScreen>
           if (card != null) ...[
             _WordCard(card: card),
             const SizedBox(height: 18),
-            _DescriberButtons(
-              onCorrect: _markLastCorrect,
-              onSkip: _skipCard,
-            ),
+            _DescriberButtons(onCorrect: _markLastCorrect, onSkip: _skipCard),
           ] else
             _PlaceholderCard(message: 'في انتظار البطاقة...'),
           const SizedBox(height: 20),
@@ -507,17 +514,14 @@ class _TopBar extends StatelessWidget {
           // ─ التايمر
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
             decoration: BoxDecoration(
               color: isLow
                   ? AppColors.challengeRed.withValues(alpha: 0.18)
                   : AppColors.challengeBlue.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: isLow
-                    ? AppColors.challengeRed
-                    : AppColors.challengeBlue,
+                color: isLow ? AppColors.challengeRed : AppColors.challengeBlue,
                 width: 1.5,
               ),
             ),
@@ -535,8 +539,7 @@ class _TopBar extends StatelessWidget {
                 Text(
                   _fmt(remaining),
                   style: TextStyle(
-                    color:
-                        isLow ? AppColors.challengeRed : Colors.white,
+                    color: isLow ? AppColors.challengeRed : Colors.white,
                     fontWeight: FontWeight.w900,
                     fontSize: 22,
                   ),
@@ -548,8 +551,7 @@ class _TopBar extends StatelessWidget {
 
           // ─ الدور
           Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
               color: isDescriber
                   ? AppColors.challengePurple.withValues(alpha: 0.22)
@@ -588,8 +590,7 @@ class _RoundProgressBar extends StatelessWidget {
         child: LinearProgressIndicator(
           value: progress.clamp(0.0, 1.0),
           backgroundColor: AppColors.challengeCard,
-          valueColor:
-              const AlwaysStoppedAnimation(AppColors.challengeGold),
+          valueColor: const AlwaysStoppedAnimation(AppColors.challengeGold),
           minHeight: 4,
         ),
       ),
@@ -616,8 +617,7 @@ class _ScoreRow extends StatelessWidget {
             Expanded(
               child: _TeamScoreCard(
                 team: room.teams[i],
-                isHighlighted:
-                    room.teams[i].playerIds.contains(currentUid),
+                isHighlighted: room.teams[i].playerIds.contains(currentUid),
               ),
             ),
           ],
@@ -641,21 +641,11 @@ class _ScoreRow extends StatelessWidget {
 }
 
 class _TeamScoreCard extends StatelessWidget {
-  const _TeamScoreCard({
-    required this.team,
-    required this.isHighlighted,
-  });
+  const _TeamScoreCard({required this.team, required this.isHighlighted});
   final Team team;
   final bool isHighlighted;
 
-  Color get _tc {
-    try {
-      return Color(
-          int.parse('FF${team.color.replaceFirst('#', '')}', radix: 16));
-    } catch (_) {
-      return AppColors.challengeBlue;
-    }
-  }
+  Color get _tc => team.color;
 
   @override
   Widget build(BuildContext context) {
@@ -740,8 +730,7 @@ class _PlayerScoreCard extends StatelessWidget {
               ),
               Text(
                 'نقطة',
-                style: TextStyle(
-                    color: c.withValues(alpha: 0.6), fontSize: 10),
+                style: TextStyle(color: c.withValues(alpha: 0.6), fontSize: 10),
               ),
             ],
           ),
@@ -801,8 +790,7 @@ class _WordCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(card.typeEmoji,
-                  style: const TextStyle(fontSize: 22)),
+              Text(card.typeEmoji, style: const TextStyle(fontSize: 22)),
               const SizedBox(width: 8),
               Text(
                 card.typeNameAr,
@@ -945,10 +933,7 @@ class _InfoChip extends StatelessWidget {
 // ════════════════════════════════════════════════════════════════════════════
 
 class _DescriberButtons extends StatelessWidget {
-  const _DescriberButtons({
-    required this.onCorrect,
-    required this.onSkip,
-  });
+  const _DescriberButtons({required this.onCorrect, required this.onSkip});
   final VoidCallback onCorrect;
   final VoidCallback onSkip;
 
@@ -1003,8 +988,7 @@ class _GameActionButton extends StatelessWidget {
         backgroundColor: color.withValues(alpha: 0.18),
         foregroundColor: color,
         side: BorderSide(color: color.withValues(alpha: 0.5), width: 1.5),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         padding: const EdgeInsets.symmetric(vertical: 14),
         elevation: 0,
       ),
@@ -1015,8 +999,7 @@ class _GameActionButton extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
-                fontWeight: FontWeight.w900, fontSize: 15),
+            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
           ),
           Text(
             sublabel,
@@ -1223,12 +1206,13 @@ class _GuessInputRow extends StatelessWidget {
             style: const TextStyle(color: Colors.white, fontSize: 16),
             decoration: InputDecoration(
               hintText: 'اكتب تخمينك...',
-              hintStyle:
-                  const TextStyle(color: AppColors.challengeGray),
+              hintStyle: const TextStyle(color: AppColors.challengeGray),
               filled: true,
               fillColor: AppColors.challengeCard,
               contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 18, vertical: 14),
+                horizontal: 18,
+                vertical: 14,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide.none,
@@ -1251,10 +1235,12 @@ class _GuessInputRow extends StatelessWidget {
             onPressed: isLoading ? null : onSubmit,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.challengeBlue,
-              disabledBackgroundColor:
-                  AppColors.challengeBlue.withValues(alpha: 0.4),
+              disabledBackgroundColor: AppColors.challengeBlue.withValues(
+                alpha: 0.4,
+              ),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14)),
+                borderRadius: BorderRadius.circular(14),
+              ),
               padding: EdgeInsets.zero,
               elevation: 0,
             ),
@@ -1263,10 +1249,11 @@ class _GuessInputRow extends StatelessWidget {
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
-                : const Icon(Icons.send_rounded,
-                    color: Colors.white, size: 22),
+                : const Icon(Icons.send_rounded, color: Colors.white, size: 22),
           ),
         ),
       ],
@@ -1295,11 +1282,9 @@ class _GuessesFeed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final answers = state.answers.entries
-        .where((e) => e.value.text != '__skip__')
-        .toList()
-      ..sort(
-          (a, b) => b.value.submittedAt.compareTo(a.value.submittedAt));
+    final answers =
+        state.answers.entries.where((e) => e.value.text != '__skip__').toList()
+          ..sort((a, b) => b.value.submittedAt.compareTo(a.value.submittedAt));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1374,13 +1359,19 @@ class _GuessChip extends StatelessWidget {
     if (answer.isCorrect == true) {
       border = AppColors.challengeGreen;
       bg = AppColors.challengeGreen.withValues(alpha: 0.13);
-      trailing = const Icon(Icons.check_circle_rounded,
-          color: AppColors.challengeGreen, size: 22);
+      trailing = const Icon(
+        Icons.check_circle_rounded,
+        color: AppColors.challengeGreen,
+        size: 22,
+      );
     } else if (answer.isCorrect == false) {
       border = AppColors.challengeRed;
       bg = AppColors.challengeRed.withValues(alpha: 0.10);
-      trailing = const Icon(Icons.cancel_rounded,
-          color: AppColors.challengeRed, size: 22);
+      trailing = const Icon(
+        Icons.cancel_rounded,
+        color: AppColors.challengeRed,
+        size: 22,
+      );
     } else {
       border = Colors.white.withValues(alpha: 0.12);
       bg = AppColors.challengeCard.withValues(alpha: 0.55);
@@ -1432,8 +1423,7 @@ class _GuessChip extends StatelessWidget {
           ),
           const Text(
             ': ',
-            style: TextStyle(
-                color: AppColors.challengeGray, fontSize: 12),
+            style: TextStyle(color: AppColors.challengeGray, fontSize: 12),
           ),
           Expanded(
             child: Text(
@@ -1485,10 +1475,7 @@ class _JudgeBtn extends StatelessWidget {
 // ════════════════════════════════════════════════════════════════════════════
 
 class _CelebrationOverlay extends StatelessWidget {
-  const _CelebrationOverlay({
-    required this.text,
-    required this.scale,
-  });
+  const _CelebrationOverlay({required this.text, required this.scale});
   final String text;
   final Animation<double> scale;
 
@@ -1500,8 +1487,7 @@ class _CelebrationOverlay extends StatelessWidget {
           scale: scale,
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 40),
-            padding: const EdgeInsets.symmetric(
-                horizontal: 28, vertical: 22),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 22),
             decoration: BoxDecoration(
               color: AppColors.challengeGreen.withValues(alpha: 0.96),
               borderRadius: BorderRadius.circular(28),
@@ -1516,10 +1502,7 @@ class _CelebrationOverlay extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  '🎉',
-                  style: TextStyle(fontSize: 56),
-                ),
+                const Text('🎉', style: TextStyle(fontSize: 56)),
                 const SizedBox(height: 8),
                 const Text(
                   'إجابة صحيحة!',
@@ -1533,10 +1516,7 @@ class _CelebrationOverlay extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     '"$text"',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
+                    style: const TextStyle(color: Colors.white70, fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -1598,7 +1578,9 @@ class _RoundResultSheet extends StatelessWidget {
               const SizedBox(height: 10),
               Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 8),
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.challengeGold.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
@@ -1660,15 +1642,12 @@ class _PlaceholderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.challengeCard.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(_kCardRadius),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.07),
-        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
       ),
       child: Center(
         child: Text(
           message,
-          style:
-              const TextStyle(color: AppColors.challengeGray, fontSize: 14),
+          style: const TextStyle(color: AppColors.challengeGray, fontSize: 14),
         ),
       ),
     );
@@ -1696,10 +1675,7 @@ class _WaitingView extends StatelessWidget {
           const SizedBox(height: 18),
           Text(
             message,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 16,
-            ),
+            style: const TextStyle(color: Colors.white70, fontSize: 16),
           ),
         ],
       ),

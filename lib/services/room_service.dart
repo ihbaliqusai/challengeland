@@ -7,21 +7,31 @@ import '../core/constants/firestore_collections.dart';
 import '../core/utils/room_code_generator.dart';
 import '../models/room.dart';
 import '../models/room_player.dart';
+import '../models/player_role.dart';
 import '../models/user_profile.dart';
 import 'mock_data_service.dart';
+import 'role_rotation_service.dart';
+import 'team_service.dart';
 
 class RoomService {
   RoomService({
     MockDataService? mockDataService,
     FirebaseFirestore? firestore,
     RoomCodeGenerator? codeGenerator,
+    TeamService? teamService,
+    RoleRotationService? roleRotationService,
   }) : _mockDataService = mockDataService ?? MockDataService(),
        _firestore = firestore,
-       _codeGenerator = codeGenerator ?? RoomCodeGenerator();
+       _codeGenerator = codeGenerator ?? RoomCodeGenerator(),
+       _teamService = teamService ?? const TeamService(),
+       _roleRotationService =
+           roleRotationService ?? const RoleRotationService();
 
   final MockDataService _mockDataService;
   final FirebaseFirestore? _firestore;
   final RoomCodeGenerator _codeGenerator;
+  final TeamService _teamService;
+  final RoleRotationService _roleRotationService;
   Room? _mockRoom;
 
   FirebaseFirestore get _db => _firestore ?? FirebaseFirestore.instance;
@@ -121,6 +131,9 @@ class RoomService {
             .where((player) => player.uid != uid)
             .toList(growable: false),
       );
+      if (_mockRoom != null) {
+        _mockRoom = _teamService.syncTeamsFromPlayers(_mockRoom!);
+      }
       return;
     }
     await _db.collection(FirestoreCollections.rooms).doc(roomId).update({
@@ -150,27 +163,62 @@ class RoomService {
   }
 
   Future<Room> assignTeam(Room room, String uid, String teamId) async {
-    final players = room.players
-        .map(
-          (player) =>
-              player.uid == uid ? player.copyWith(teamId: teamId) : player,
-        )
-        .toList(growable: false);
-    return updateRoomSettings(room.copyWith(players: players));
+    return updateRoomSettings(_teamService.movePlayerToTeam(room, uid, teamId));
+  }
+
+  Future<Room> autoAssignTeams(Room room) async {
+    return updateRoomSettings(_teamService.autoAssignTeams(room));
+  }
+
+  Future<Room> resetTeams(Room room) async {
+    return updateRoomSettings(_teamService.resetTeams(room));
+  }
+
+  Future<Room> applyCorrectAnswer(
+    Room room, {
+    required String describerUid,
+    required String guesserUid,
+  }) async {
+    return updateRoomSettings(
+      _teamService.applyCorrectAnswer(
+        room,
+        describerUid: describerUid,
+        guesserUid: guesserUid,
+      ),
+    );
+  }
+
+  Future<Room> applySkip(Room room, {required String describerUid}) async {
+    return updateRoomSettings(
+      _teamService.applySkip(room, describerUid: describerUid),
+    );
+  }
+
+  Future<Room> advanceToNextRound(Room room) async {
+    return updateRoomSettings(_roleRotationService.advanceToNextRound(room));
   }
 
   Future<Room> removePlayer(Room room, String uid) async {
     return updateRoomSettings(
-      room.copyWith(
-        players: room.players
-            .where((player) => player.uid != uid)
-            .toList(growable: false),
+      _teamService.syncTeamsFromPlayers(
+        room.copyWith(
+          players: room.players
+              .where((player) => player.uid != uid)
+              .toList(growable: false),
+        ),
       ),
     );
   }
 
   Future<Room> startGame(Room room) async {
-    return updateRoomSettings(room.copyWith(status: 'active'));
+    final prepared =
+        room.gameType.isTeamMode &&
+            room.players.any(
+              (player) => player.teamId == null || player.teamId!.isEmpty,
+            )
+        ? _teamService.autoAssignTeams(room)
+        : _teamService.syncTeamsFromPlayers(room);
+    return updateRoomSettings(_roleRotationService.startGame(prepared));
   }
 
   Future<Room> finishRoom(Room room) async {

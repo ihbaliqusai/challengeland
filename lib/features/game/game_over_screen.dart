@@ -309,9 +309,7 @@ class _GameOverScreenState extends State<GameOverScreen>
         child: Column(
           children: [
             Icon(
-              won
-                  ? Icons.emoji_events_rounded
-                  : Icons.military_tech_rounded,
+              won ? Icons.emoji_events_rounded : Icons.military_tech_rounded,
               size: 72,
               color: won ? AppColors.challengeDark : AppColors.challengeGold,
             ),
@@ -320,10 +318,9 @@ class _GameOverScreenState extends State<GameOverScreen>
               title,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color:
-                        won ? AppColors.challengeDark : Colors.white,
-                  ),
+                fontWeight: FontWeight.w900,
+                color: won ? AppColors.challengeDark : Colors.white,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
@@ -344,8 +341,7 @@ class _GameOverScreenState extends State<GameOverScreen>
 
   Widget _buildTeamSection(Room room) {
     final sorted = [...room.teams]..sort((a, b) => b.score.compareTo(a.score));
-    final maxScore =
-        sorted.isEmpty ? 1 : sorted.first.score.clamp(1, 9999);
+    final maxScore = sorted.isEmpty ? 1 : sorted.first.score.clamp(1, 9999);
 
     return AppCard(
       child: Column(
@@ -354,18 +350,18 @@ class _GameOverScreenState extends State<GameOverScreen>
           const Text(
             'نقاط الفرق',
             style: TextStyle(
-                color: AppColors.challengeGray,
-                fontSize: 13,
-                fontWeight: FontWeight.w700),
+              color: AppColors.challengeGray,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 14),
           ...sorted.map((team) {
             final color = _teamColor(team);
             final isWinner = team.id == _winnerTeamId;
-            final teamPlayers = room.players
-                .where((p) => p.teamId == team.id)
-                .toList()
-              ..sort((a, b) => b.score.compareTo(a.score));
+            final teamPlayers =
+                room.players.where((p) => p.teamId == team.id).toList()
+                  ..sort((a, b) => b.score.compareTo(a.score));
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
@@ -384,8 +380,11 @@ class _GameOverScreenState extends State<GameOverScreen>
                       ),
                       if (isWinner) ...[
                         const SizedBox(width: 6),
-                        const Icon(Icons.emoji_events_rounded,
-                            color: AppColors.challengeGold, size: 18),
+                        const Icon(
+                          Icons.emoji_events_rounded,
+                          color: AppColors.challengeGold,
+                          size: 18,
+                        ),
                       ],
                       const Spacer(),
                       TweenAnimationBuilder<int>(
@@ -395,9 +394,10 @@ class _GameOverScreenState extends State<GameOverScreen>
                         builder: (_, v, __) => Text(
                           '$v نقطة',
                           style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 16),
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ],
@@ -405,8 +405,9 @@ class _GameOverScreenState extends State<GameOverScreen>
                   const SizedBox(height: 6),
                   TweenAnimationBuilder<double>(
                     tween: Tween(
-                        begin: 0,
-                        end: maxScore == 0 ? 0 : team.score / maxScore),
+                      begin: 0,
+                      end: maxScore == 0 ? 0 : team.score / maxScore,
+                    ),
                     duration: const Duration(milliseconds: 1400),
                     curve: Curves.easeOutCubic,
                     builder: (_, v, __) => ClipRRect(
@@ -414,21 +415,21 @@ class _GameOverScreenState extends State<GameOverScreen>
                       child: LinearProgressIndicator(
                         minHeight: 10,
                         value: v,
-                        backgroundColor:
-                            Colors.white.withValues(alpha: 0.08),
+                        backgroundColor: Colors.white.withValues(alpha: 0.08),
                         valueColor: AlwaysStoppedAnimation(color),
                       ),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  ...teamPlayers.asMap().entries.map((e) =>
-                      _PlayerRow(
-                        player: e.value,
-                        isMe: e.value.uid == _currentUid,
-                        rank: e.key + 1,
-                        maxScore: _maxPlayerScore(room),
-                        barColor: color,
-                      )),
+                  ...teamPlayers.asMap().entries.map(
+                    (e) => _PlayerRow(
+                      player: e.value,
+                      isMe: e.value.uid == _currentUid,
+                      rank: e.key + 1,
+                      maxScore: _maxPlayerScore(room),
+                      barColor: color,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -449,18 +450,21 @@ class _GameOverScreenState extends State<GameOverScreen>
           const Text(
             'الترتيب النهائي',
             style: TextStyle(
-                color: AppColors.challengeGray,
-                fontSize: 13,
-                fontWeight: FontWeight.w700),
+              color: AppColors.challengeGray,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 10),
-          ...sorted.asMap().entries.map((e) => _PlayerRow(
-                player: e.value,
-                isMe: e.value.uid == _currentUid,
-                rank: e.key + 1,
-                maxScore: _maxPlayerScore(room),
-                showTrophy: e.key == 0 && _winnerUid != null,
-              )),
+          ...sorted.asMap().entries.map(
+            (e) => _PlayerRow(
+              player: e.value,
+              isMe: e.value.uid == _currentUid,
+              rank: e.key + 1,
+              maxScore: _maxPlayerScore(room),
+              showTrophy: e.key == 0 && _winnerUid != null,
+            ),
+          ),
         ],
       ),
     );
@@ -471,10 +475,8 @@ class _GameOverScreenState extends State<GameOverScreen>
       ..sort((a, b) => b.personalScore.compareTo(a.personalScore));
     final byCorrect = [...room.players]
       ..sort((a, b) => b.correctGuesses.compareTo(a.correctGuesses));
-    final bestPlayer =
-        byPersonal.isNotEmpty ? byPersonal.first : null;
-    final topGuesser =
-        byCorrect.isNotEmpty ? byCorrect.first : null;
+    final bestPlayer = byPersonal.isNotEmpty ? byPersonal.first : null;
+    final topGuesser = byCorrect.isNotEmpty ? byCorrect.first : null;
 
     return AppCard(
       child: Column(
@@ -483,9 +485,10 @@ class _GameOverScreenState extends State<GameOverScreen>
           const Text(
             'جوائز الجولة',
             style: TextStyle(
-                color: AppColors.challengeGray,
-                fontSize: 13,
-                fontWeight: FontWeight.w700),
+              color: AppColors.challengeGray,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 10),
           if (bestPlayer != null && bestPlayer.personalScore > 0)
@@ -553,9 +556,10 @@ class _GameOverScreenState extends State<GameOverScreen>
               const Text(
                 'مكافآتك',
                 style: TextStyle(
-                    color: AppColors.challengeGray,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700),
+                  color: AppColors.challengeGray,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const Spacer(),
               if (_saving)
@@ -563,15 +567,22 @@ class _GameOverScreenState extends State<GameOverScreen>
                   width: 14,
                   height: 14,
                   child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.challengeCyan),
+                    strokeWidth: 2,
+                    color: AppColors.challengeCyan,
+                  ),
                 )
               else if (_saved)
-                const Icon(Icons.check_circle_rounded,
-                    color: AppColors.challengeGreen, size: 16)
+                const Icon(
+                  Icons.check_circle_rounded,
+                  color: AppColors.challengeGreen,
+                  size: 16,
+                )
               else if (_saveError != null)
-                const Icon(Icons.error_outline_rounded,
-                    color: AppColors.challengeRed, size: 16),
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: AppColors.challengeRed,
+                  size: 16,
+                ),
             ],
           ),
           const SizedBox(height: 14),
@@ -597,9 +608,7 @@ class _GameOverScreenState extends State<GameOverScreen>
                 color: AppColors.challengeOrange,
               ),
               _RewardChip(
-                value: ratingDelta >= 0
-                    ? '+$ratingDelta'
-                    : '$ratingDelta',
+                value: ratingDelta >= 0 ? '+$ratingDelta' : '$ratingDelta',
                 label: 'تقييم',
                 icon: '📊',
                 color: ratingDelta >= 0
@@ -624,12 +633,7 @@ class _GameOverScreenState extends State<GameOverScreen>
   }
 
   Color _teamColor(Team team) {
-    try {
-      return Color(
-          int.parse('FF${team.color.replaceFirst('#', '')}', radix: 16));
-    } catch (_) {
-      return AppColors.challengeBlue;
-    }
+    return team.color;
   }
 }
 
@@ -669,25 +673,23 @@ class _PlayerRow extends StatelessWidget {
                     Text(
                       player.username,
                       style: TextStyle(
-                        color:
-                            isMe ? AppColors.challengeCyan : Colors.white,
-                        fontWeight:
-                            isMe ? FontWeight.w900 : FontWeight.w700,
+                        color: isMe ? AppColors.challengeCyan : Colors.white,
+                        fontWeight: isMe ? FontWeight.w900 : FontWeight.w700,
                         fontSize: 13,
                       ),
                     ),
                     if (showTrophy) ...[
                       const SizedBox(width: 4),
-                      const Text('🌟',
-                          style: TextStyle(fontSize: 13)),
+                      const Text('🌟', style: TextStyle(fontSize: 13)),
                     ],
                   ],
                 ),
                 const SizedBox(height: 3),
                 TweenAnimationBuilder<double>(
                   tween: Tween(
-                      begin: 0,
-                      end: maxScore == 0 ? 0 : player.score / maxScore),
+                    begin: 0,
+                    end: maxScore == 0 ? 0 : player.score / maxScore,
+                  ),
                   duration: const Duration(milliseconds: 1400),
                   curve: Curves.easeOutCubic,
                   builder: (_, v, __) => ClipRRect(
@@ -695,8 +697,7 @@ class _PlayerRow extends StatelessWidget {
                     child: LinearProgressIndicator(
                       minHeight: 6,
                       value: v,
-                      backgroundColor:
-                          Colors.white.withValues(alpha: 0.08),
+                      backgroundColor: Colors.white.withValues(alpha: 0.08),
                       valueColor: AlwaysStoppedAnimation(barColor),
                     ),
                   ),
@@ -712,9 +713,10 @@ class _PlayerRow extends StatelessWidget {
             builder: (_, v, __) => Text(
               '$v',
               style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 16),
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+              ),
             ),
           ),
         ],
@@ -748,7 +750,10 @@ class _RankBadge extends StatelessWidget {
       child: Text(
         '$rank',
         style: TextStyle(
-            color: color, fontWeight: FontWeight.w900, fontSize: 12),
+          color: color,
+          fontWeight: FontWeight.w900,
+          fontSize: 12,
+        ),
       ),
     );
   }
@@ -779,14 +784,14 @@ class _StatRow extends StatelessWidget {
             child: Text(
               label,
               style: const TextStyle(
-                  color: AppColors.challengeGray,
-                  fontWeight: FontWeight.w600),
+                color: AppColors.challengeGray,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           Text(
             value,
-            style: TextStyle(
-                color: color, fontWeight: FontWeight.w900),
+            style: TextStyle(color: color, fontWeight: FontWeight.w900),
           ),
         ],
       ),
@@ -821,15 +826,17 @@ class _RewardChip extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.w900,
-                fontSize: 16),
+              color: color,
+              fontWeight: FontWeight.w900,
+              fontSize: 16,
+            ),
           ),
           Text(
             label,
             style: const TextStyle(
-                color: AppColors.challengeGray,
-                fontSize: 11),
+              color: AppColors.challengeGray,
+              fontSize: 11,
+            ),
           ),
         ],
       ),
@@ -862,10 +869,7 @@ class _Particle {
 }
 
 class _ConfettiLayer extends StatelessWidget {
-  const _ConfettiLayer({
-    required this.ctrl,
-    required this.particles,
-  });
+  const _ConfettiLayer({required this.ctrl, required this.particles});
 
   final AnimationController ctrl;
   final List<_Particle> particles;
@@ -884,7 +888,8 @@ class _ConfettiLayer extends StatelessWidget {
             children: particles.map((p) {
               final progress = ((t - p.delay) * p.speed).clamp(0.0, 1.0);
               final top = -p.h + progress * (h + p.h * 2);
-              final angle = p.rotationBase + progress * p.rotationSpeed * math.pi * 2;
+              final angle =
+                  p.rotationBase + progress * p.rotationSpeed * math.pi * 2;
               return Positioned(
                 left: p.leftFraction * (w - p.w),
                 top: top,

@@ -2,6 +2,7 @@ import '../models/player_role.dart';
 import '../models/room.dart';
 import '../models/room_player.dart';
 import '../models/team.dart';
+import 'team_service.dart';
 
 /// يتحكم في تدوير أدوار اللاعبين والنقاط عبر جولات اللعبة.
 ///
@@ -15,7 +16,10 @@ import '../models/team.dart';
 ///             وداخل كل فريق يتناوب اللاعبون كل مرة يصف فيها الفريق
 ///   - حفلة : اللاعبون يتناوبون بالترتيب، الجميع يخمّن
 class RoleRotationService {
-  const RoleRotationService();
+  const RoleRotationService({TeamService teamService = const TeamService()})
+    : _teamService = teamService;
+
+  final TeamService _teamService;
 
   // =========================================================
   // 1. بدء اللعبة
@@ -23,7 +27,10 @@ class RoleRotationService {
 
   /// يحوّل الغرفة من مرحلة الانتظار إلى الجولة الأولى.
   Room startGame(Room room) {
-    final started = room.copyWith(
+    final prepared = room.gameType.isTeamMode
+        ? _teamService.ensureDefaultTeams(room)
+        : room;
+    final started = prepared.copyWith(
       currentRound: 1,
       status: 'active',
       phase: GamePhase.describing,
@@ -79,6 +86,14 @@ class RoleRotationService {
   /// [describerUid] - uid اللاعب الذي كان يصف
   /// [guesserUid]   - uid أول لاعب أجاب صحيحاً
   Room applyCorrectAnswer(Room room, String describerUid, String guesserUid) {
+    if (room.gameType.isTeamMode) {
+      return _teamService.applyCorrectAnswer(
+        room,
+        describerUid: describerUid,
+        guesserUid: guesserUid,
+      );
+    }
+
     final update = ScoreUpdate.correct(
       describerUid: describerUid,
       guesserUid: guesserUid,
@@ -89,6 +104,10 @@ class RoleRotationService {
 
   /// يُطبَّق عندما يتخطى المُوصِف البطاقة.
   Room applySkip(Room room, String describerUid) {
+    if (room.gameType.isTeamMode) {
+      return _teamService.applySkip(room, describerUid: describerUid);
+    }
+
     final update = ScoreUpdate.skip(
       describerUid: describerUid,
       describingTeamId: room.currentTeamDescribingId,
@@ -118,8 +137,7 @@ class RoleRotationService {
   /// يعيد الفريق الذي يصف في الجولة الحالية.
   Team? computeDescribingTeam(Room room) {
     if (!room.gameType.isTeamMode || room.teams.isEmpty) return null;
-    final idx = (room.currentRound - 1) % room.teams.length;
-    return room.teams[idx];
+    return _teamService.describingTeamForRound(room);
   }
 
   /// يعيد كل لاعب مع دوره المحدَّث للجولة الحالية.
@@ -127,14 +145,16 @@ class RoleRotationService {
     final describerUid = computeDescriberUid(room);
     final describingTeam = computeDescribingTeam(room);
 
-    return room.players.map((player) {
-      final role = _roleForPlayer(
-        player: player,
-        describerUid: describerUid,
-        describingTeamId: describingTeam?.id,
-      );
-      return player.copyWith(role: role);
-    }).toList(growable: false);
+    return room.players
+        .map((player) {
+          final role = _roleForPlayer(
+            player: player,
+            describerUid: describerUid,
+            describingTeamId: describingTeam?.id,
+          );
+          return player.copyWith(role: role);
+        })
+        .toList(growable: false);
   }
 
   /// يعيد اللاعب الفائز (أعلى نقاط) في لعبة 1v1 أو حفلة.
@@ -159,27 +179,28 @@ class RoleRotationService {
   Room _applyRolesAndDescriber(Room room) {
     final describerUid = computeDescriberUid(room);
     final describingTeam = computeDescribingTeam(room);
-    final updatedPlayers = computeRolesForRound(room.copyWith(
-      currentDescriber: describerUid,
-      currentTeamDescribingId: describingTeam?.id,
-    ));
-
-    return room.copyWith(
+    final updatedPlayers = computeRolesForRound(
+      room.copyWith(
+        currentDescriber: describerUid,
+        currentTeamDescribingId: describingTeam?.id,
+      ),
+    );
+    final updatedRoom = room.copyWith(
       currentDescriber: describerUid,
       currentTeamDescribingId: describingTeam?.id,
       players: updatedPlayers,
     );
+
+    return room.gameType.isTeamMode
+        ? _teamService.syncTeamsFromPlayers(updatedRoom)
+        : updatedRoom;
   }
 
   /// يُقدِّم describerIndex للفريق الذي وصف في الجولة المنتهية.
   List<Team> _advanceTeamDescriber(Room room) {
     if (room.teams.isEmpty || room.currentRound == 0) return room.teams;
 
-    final describingIdx = (room.currentRound - 1) % room.teams.length;
-    return [
-      for (int i = 0; i < room.teams.length; i++)
-        i == describingIdx ? room.teams[i].advanceDescriber() : room.teams[i],
-    ];
+    return _teamService.advanceDescriberForFinishedRound(room).teams;
   }
 
   // ─── تحديد المُوصِف ───
@@ -224,30 +245,36 @@ class RoleRotationService {
 
   Room _applyScoreUpdate(Room room, ScoreUpdate update) {
     // تحديث اللاعبين
-    final updatedPlayers = room.players.map((player) {
-      if (player.uid == update.describerUid) {
-        return player.copyWith(
-          personalScore: player.personalScore + update.describerDelta,
-          score: player.score + update.describerDelta,
-          skipsUsed: update.isSkip ? player.skipsUsed + 1 : player.skipsUsed,
-        );
-      }
-      if (update.isCorrect && player.uid == update.guesserUid) {
-        return player.copyWith(
-          personalScore: player.personalScore + update.guesserDelta,
-          score: player.score + update.guesserDelta,
-          correctGuesses: player.correctGuesses + 1,
-        );
-      }
-      return player;
-    }).toList(growable: false);
+    final updatedPlayers = room.players
+        .map((player) {
+          if (player.uid == update.describerUid) {
+            return player.copyWith(
+              personalScore: player.personalScore + update.describerDelta,
+              score: player.score + update.describerDelta,
+              skipsUsed: update.isSkip
+                  ? player.skipsUsed + 1
+                  : player.skipsUsed,
+            );
+          }
+          if (update.isCorrect && player.uid == update.guesserUid) {
+            return player.copyWith(
+              personalScore: player.personalScore + update.guesserDelta,
+              score: player.score + update.guesserDelta,
+              correctGuesses: player.correctGuesses + 1,
+            );
+          }
+          return player;
+        })
+        .toList(growable: false);
 
     // تحديث نقاط الفرق
-    final updatedTeams = room.teams.map((team) {
-      final delta = update.teamDeltas[team.id];
-      if (delta == null || delta == 0) return team;
-      return team.addPoints(delta);
-    }).toList(growable: false);
+    final updatedTeams = room.teams
+        .map((team) {
+          final delta = update.teamDeltas[team.id];
+          if (delta == null || delta == 0) return team;
+          return team.addPoints(delta, round: room.currentRound);
+        })
+        .toList(growable: false);
 
     return room.copyWith(
       players: updatedPlayers,

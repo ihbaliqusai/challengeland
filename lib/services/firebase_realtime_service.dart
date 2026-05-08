@@ -8,15 +8,14 @@ import '../models/player_role.dart';
 
 class FirebaseRealtimeService {
   FirebaseRealtimeService({FirebaseDatabase? database})
-      : _db = database ?? FirebaseDatabase.instance;
+    : _db = database ?? FirebaseDatabase.instance;
 
   final FirebaseDatabase _db;
 
   // ── مراجع المسارات ──
 
   DatabaseReference _roomRef(String roomId) => _db.ref('rooms/$roomId');
-  DatabaseReference _stateRef(String roomId) =>
-      _db.ref('rooms/$roomId/state');
+  DatabaseReference _stateRef(String roomId) => _db.ref('rooms/$roomId/state');
   DatabaseReference _playerRef(String roomId, String uid) =>
       _db.ref('rooms/$roomId/players/$uid');
   DatabaseReference _playersRef(String roomId) =>
@@ -59,9 +58,7 @@ class FirebaseRealtimeService {
           roundDuration: 60,
         );
       }
-      return LiveRoomState.fromRtdbMap(
-        Map<String, dynamic>.from(raw as Map),
-      );
+      return LiveRoomState.fromRtdbMap(Map<String, dynamic>.from(raw as Map));
     });
   }
 

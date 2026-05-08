@@ -136,7 +136,13 @@ Room sampleRoom({String id = 'room-1'}) {
     players: [sampleRoomPlayer()],
     teams: [
       sampleTeam(),
-      sampleTeam(id: 'gold', name: 'الفريق الذهبي', color: '#EAB308', emoji: '🟡', score: 80),
+      sampleTeam(
+        id: 'gold',
+        name: 'الفريق الذهبي',
+        color: '#EAB308',
+        emoji: '🟡',
+        score: 80,
+      ),
     ],
     gameSessionId: null,
     createdAt: now,

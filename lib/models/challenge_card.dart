@@ -1,15 +1,15 @@
 enum ChallengeCardType {
-  describe,  // وصف
-  act,       // تمثيل
-  letter,    // حرف
-  question,  // سؤال
-  link,      // رابط
+  describe, // وصف
+  act, // تمثيل
+  letter, // حرف
+  question, // سؤال
+  link, // رابط
 }
 
 enum ChallengeDifficulty {
-  easy,   // سهل
+  easy, // سهل
   medium, // متوسط
-  hard,   // صعب
+  hard, // صعب
 }
 
 class ChallengeCard {

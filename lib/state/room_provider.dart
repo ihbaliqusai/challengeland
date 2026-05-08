@@ -70,12 +70,9 @@ class RoomProvider extends ChangeNotifier {
   }
 
   Future<void> joinRoom(UserProfile user, String code) async {
-    await _run(
-      () async {
-        room = await _roomService.joinRoomByCode(user: user, code: code);
-      },
-      fallback: AppStrings.roomNotFound,
-    );
+    await _run(() async {
+      room = await _roomService.joinRoomByCode(user: user, code: code);
+    }, fallback: AppStrings.roomNotFound);
   }
 
   // ═══════════════════════════════════════════════
@@ -135,6 +132,51 @@ class RoomProvider extends ChangeNotifier {
     final current = room;
     if (current == null) return;
     room = await _roomService.assignTeam(current, uid, teamId);
+    notifyListeners();
+  }
+
+  Future<void> autoAssignTeams() async {
+    final current = room;
+    if (current == null) return;
+    room = await _roomService.autoAssignTeams(current);
+    notifyListeners();
+  }
+
+  Future<void> movePlayerToTeam(String uid, String teamId) =>
+      assignTeam(uid, teamId);
+
+  Future<void> resetTeams() async {
+    final current = room;
+    if (current == null) return;
+    room = await _roomService.resetTeams(current);
+    notifyListeners();
+  }
+
+  Future<void> applyCorrectAnswer({
+    required String describerUid,
+    required String guesserUid,
+  }) async {
+    final current = room;
+    if (current == null) return;
+    room = await _roomService.applyCorrectAnswer(
+      current,
+      describerUid: describerUid,
+      guesserUid: guesserUid,
+    );
+    notifyListeners();
+  }
+
+  Future<void> applySkip({required String describerUid}) async {
+    final current = room;
+    if (current == null) return;
+    room = await _roomService.applySkip(current, describerUid: describerUid);
+    notifyListeners();
+  }
+
+  Future<void> advanceToNextRound() async {
+    final current = room;
+    if (current == null) return;
+    room = await _roomService.advanceToNextRound(current);
     notifyListeners();
   }
 

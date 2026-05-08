@@ -13,10 +13,10 @@ import '../services/matchmaking_service.dart';
 
 enum MatchmakingState {
   idle,
-  searching,    // في الطابور، ينتظر خصماً
-  found,        // تمت المطابقة أو إنشاء الغرفة
+  searching, // في الطابور، ينتظر خصماً
+  found, // تمت المطابقة أو إنشاء الغرفة
   creatingRoom, // إنشاء غرفة خاصة
-  joiningRoom,  // الانضمام بكود
+  joiningRoom, // الانضمام بكود
   error,
 }
 
@@ -27,11 +27,11 @@ class MatchmakingProvider extends ChangeNotifier {
   final MatchmakingService _service;
 
   MatchmakingState state = MatchmakingState.idle;
-  GameSession? session;   // جلسة اللعب بعد المطابقة
-  Room? room;             // غرفة خاصة/فرق بعد الإنشاء أو الانضمام
+  GameSession? session; // جلسة اللعب بعد المطابقة
+  Room? room; // غرفة خاصة/فرق بعد الإنشاء أو الانضمام
   bool isBotMatch = false;
   String? error;
-  int waitSeconds = 0;    // مدة الانتظار للعرض في الواجهة
+  int waitSeconds = 0; // مدة الانتظار للعرض في الواجهة
 
   bool get isSearching => state == MatchmakingState.searching;
   bool get isFound => state == MatchmakingState.found;
@@ -118,24 +118,21 @@ class MatchmakingProvider extends ChangeNotifier {
   }
 
   void _subscribeToQueue(UserProfile user) {
-    _queueSub = _service.listenToQueueEntry(user.uid).listen(
-      (entry) async {
-        if (state != MatchmakingState.searching) return;
-        if (entry?.isMatched != true || entry?.matchedSessionId == null) return;
+    _queueSub = _service.listenToQueueEntry(user.uid).listen((entry) async {
+      if (state != MatchmakingState.searching) return;
+      if (entry?.isMatched != true || entry?.matchedSessionId == null) return;
 
-        try {
-          session = await _service.fetchSession(entry!.matchedSessionId!);
-          isBotMatch = false;
-          state = MatchmakingState.found;
-        } catch (e) {
-          _setError(e.toString());
-          return;
-        }
-        _stopTimers();
-        notifyListeners();
-      },
-      onError: (Object e) => _setError(e.toString()),
-    );
+      try {
+        session = await _service.fetchSession(entry!.matchedSessionId!);
+        isBotMatch = false;
+        state = MatchmakingState.found;
+      } catch (e) {
+        _setError(e.toString());
+        return;
+      }
+      _stopTimers();
+      notifyListeners();
+    }, onError: (Object e) => _setError(e.toString()));
   }
 
   Future<void> cancelSearch() async {

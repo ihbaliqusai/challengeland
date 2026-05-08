@@ -34,27 +34,27 @@ class Room {
   final String hostId;
 
   // ── نوع اللعبة ──
-  final String mode;         // للتوافق مع Firestore القديم
-  final GameType gameType;   // النوع المنظّم للمنطق
+  final String mode; // للتوافق مع Firestore القديم
+  final GameType gameType; // النوع المنظّم للمنطق
 
   // ── إعدادات الجولات ──
   final int questionCount;
   final int maxPlayers;
-  final int roundDuration;   // ثواني لكل جولة وصف (default 60)
-  final int totalRounds;     // عدد جولات اللعبة (default 5)
-  final int currentRound;    // الجولة الحالية (0 = لم تبدأ، 1..N)
+  final int roundDuration; // ثواني لكل جولة وصف (default 60)
+  final int totalRounds; // عدد جولات اللعبة (default 5)
+  final int currentRound; // الجولة الحالية (0 = لم تبدأ، 1..N)
 
   // ── حالة اللعبة ──
   final GamePhase phase;
-  final String status;       // 'waiting' | 'active' | 'finished'
+  final String status; // 'waiting' | 'active' | 'finished'
 
   // ── اللاعبون والفرق ──
   final List<RoomPlayer> players;
   final List<Team> teams;
 
   // ── الدور الحالي ──
-  final String? currentDescriber;          // uid المُوصِف الحالي
-  final String? currentTeamDescribingId;   // id الفريق الذي يصف الآن
+  final String? currentDescriber; // uid المُوصِف الحالي
+  final String? currentTeamDescribingId; // id الفريق الذي يصف الآن
 
   final String? gameSessionId;
   final DateTime? createdAt;
@@ -74,35 +74,31 @@ class Room {
   int get readyCount => players.where((p) => p.isReady).length;
   bool get allReady => playerCount > 0 && readyCount == playerCount;
 
-  RoomPlayer? get host =>
-      players.cast<RoomPlayer?>().firstWhere(
-        (p) => p?.uid == hostId,
-        orElse: () => null,
-      );
+  RoomPlayer? get host => players.cast<RoomPlayer?>().firstWhere(
+    (p) => p?.uid == hostId,
+    orElse: () => null,
+  );
 
-  RoomPlayer? get describerPlayer =>
-      currentDescriber == null
-          ? null
-          : players.cast<RoomPlayer?>().firstWhere(
-              (p) => p?.uid == currentDescriber,
-              orElse: () => null,
-            );
+  RoomPlayer? get describerPlayer => currentDescriber == null
+      ? null
+      : players.cast<RoomPlayer?>().firstWhere(
+          (p) => p?.uid == currentDescriber,
+          orElse: () => null,
+        );
 
-  Team? get describingTeam =>
-      currentTeamDescribingId == null
-          ? null
-          : teams.cast<Team?>().firstWhere(
-              (t) => t?.id == currentTeamDescribingId,
-              orElse: () => null,
-            );
+  Team? get describingTeam => currentTeamDescribingId == null
+      ? null
+      : teams.cast<Team?>().firstWhere(
+          (t) => t?.id == currentTeamDescribingId,
+          orElse: () => null,
+        );
 
-  Team? get guessingTeam =>
-      currentTeamDescribingId == null || teams.length < 2
-          ? null
-          : teams.cast<Team?>().firstWhere(
-              (t) => t?.id != currentTeamDescribingId,
-              orElse: () => null,
-            );
+  Team? get guessingTeam => currentTeamDescribingId == null || teams.length < 2
+      ? null
+      : teams.cast<Team?>().firstWhere(
+          (t) => t?.id != currentTeamDescribingId,
+          orElse: () => null,
+        );
 
   // نسبة تقدم اللعبة (0.0 → 1.0)
   double get progressFraction =>
@@ -183,6 +179,9 @@ class Room {
     String? gameSessionId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool clearCurrentDescriber = false,
+    bool clearCurrentTeamDescribingId = false,
+    bool clearGameSessionId = false,
   }) {
     return Room(
       id: id ?? this.id,
@@ -200,10 +199,15 @@ class Room {
       status: status ?? this.status,
       players: players ?? this.players,
       teams: teams ?? this.teams,
-      currentDescriber: currentDescriber ?? this.currentDescriber,
-      currentTeamDescribingId:
-          currentTeamDescribingId ?? this.currentTeamDescribingId,
-      gameSessionId: gameSessionId ?? this.gameSessionId,
+      currentDescriber: clearCurrentDescriber
+          ? null
+          : currentDescriber ?? this.currentDescriber,
+      currentTeamDescribingId: clearCurrentTeamDescribingId
+          ? null
+          : currentTeamDescribingId ?? this.currentTeamDescribingId,
+      gameSessionId: clearGameSessionId
+          ? null
+          : gameSessionId ?? this.gameSessionId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

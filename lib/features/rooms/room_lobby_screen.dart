@@ -95,12 +95,14 @@ class _RoomLobbyScreenState extends State<RoomLobbyScreen>
 
     final myUid = user?.uid ?? '';
     final isHost = myUid == room.hostId;
-    final myPlayer = room.players
-        .cast<RoomPlayer?>()
-        .firstWhere((p) => p?.uid == myUid, orElse: () => null);
+    final myPlayer = room.players.cast<RoomPlayer?>().firstWhere(
+      (p) => p?.uid == myUid,
+      orElse: () => null,
+    );
     final isReady = myPlayer?.isReady ?? false;
     final readyCount = room.players.where((p) => p.isReady).length;
-    final allReady = room.players.length > 1 && readyCount == room.players.length;
+    final allReady =
+        room.players.length > 1 && readyCount == room.players.length;
 
     return Scaffold(
       backgroundColor: AppColors.challengeDark,
@@ -536,8 +538,7 @@ class _TeamCol extends StatelessWidget {
   final bool isHost;
 
   Color get _color {
-    final hex = team.color.replaceAll('#', '');
-    return Color(int.parse('FF$hex', radix: 16));
+    return team.color;
   }
 
   @override
@@ -704,8 +705,7 @@ class _Avatar extends StatelessWidget {
     return CircleAvatar(
       radius: radius,
       backgroundColor: AppColors.challengeBlue.withValues(alpha: 0.3),
-      backgroundImage:
-          photoUrl != null ? NetworkImage(photoUrl!) : null,
+      backgroundImage: photoUrl != null ? NetworkImage(photoUrl!) : null,
       child: photoUrl == null
           ? Text(
               username.isNotEmpty ? username.substring(0, 1) : '؟',
@@ -860,8 +860,10 @@ class _SettingRow extends StatelessWidget {
               onTap: enabled ? () => onSelected(e.key) : null,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: picked
                       ? AppColors.challengeCyan.withValues(alpha: 0.2)
@@ -881,8 +883,8 @@ class _SettingRow extends StatelessWidget {
                     color: picked
                         ? AppColors.challengeCyan
                         : enabled
-                            ? AppColors.challengeGray
-                            : AppColors.challengeGray.withValues(alpha: 0.5),
+                        ? AppColors.challengeGray
+                        : AppColors.challengeGray.withValues(alpha: 0.5),
                   ),
                 ),
               ),
@@ -929,9 +931,7 @@ class _BottomActions extends StatelessWidget {
                 icon: Icons.copy_rounded,
                 variant: AppButtonVariant.ghost,
                 onPressed: () async {
-                  await Clipboard.setData(
-                    ClipboardData(text: room.code),
-                  );
+                  await Clipboard.setData(ClipboardData(text: room.code));
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -971,7 +971,9 @@ class _BottomActions extends StatelessWidget {
         if (!isHost)
           AppButton(
             label: isReady ? 'إلغاء الجاهزية' : '✊ جاهز للعب!',
-            variant: isReady ? AppButtonVariant.ghost : AppButtonVariant.primary,
+            variant: isReady
+                ? AppButtonVariant.ghost
+                : AppButtonVariant.primary,
             onPressed: () =>
                 context.read<RoomProvider>().setReady(myUid, !isReady),
           ),
@@ -1009,10 +1011,7 @@ class _BottomActions extends StatelessWidget {
 // ═══════════════════════════════════════════════
 
 class _CountdownOverlay extends StatelessWidget {
-  const _CountdownOverlay({
-    required this.tick,
-    required this.controller,
-  });
+  const _CountdownOverlay({required this.tick, required this.controller});
 
   final int tick;
   final AnimationController controller;

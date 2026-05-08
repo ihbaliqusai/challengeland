@@ -5,7 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 /// يُعنى بمزامنة الوقت مع خادم Firebase وإدارة حالة الاتصال.
 class SyncService {
   SyncService({FirebaseDatabase? database})
-      : _db = database ?? FirebaseDatabase.instance;
+    : _db = database ?? FirebaseDatabase.instance;
 
   final FirebaseDatabase _db;
 

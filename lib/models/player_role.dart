@@ -1,30 +1,30 @@
 // ===== أدوار اللاعبين =====
 
 enum PlayerRole {
-  host,      // صاحب الغرفة - يتحكم في الإعدادات
+  host, // صاحب الغرفة - يتحكم في الإعدادات
   describer, // المُوصِف - يصف أو يمثّل
-  guesser,   // المُخمِّن - يخمّن الكلمة
+  guesser, // المُخمِّن - يخمّن الكلمة
   spectator, // متفرج - زملاء المُوصِف في نظام الفرق
-  judge,     // حكم - يحكم صحة الإجابة (اختياري)
+  judge, // حكم - يحكم صحة الإجابة (اختياري)
 }
 
 // ===== نوع اللعبة =====
 
 enum GameType {
-  quick1v1,  // لاعب ضد لاعب سريع
-  teams2v2,  // فريقان (2 في 2)
-  teams3v3,  // فريقان (3 في 3)
-  party,     // حفلة - 4 إلى 8 لاعبين بدون فرق
+  quick1v1, // لاعب ضد لاعب سريع
+  teams2v2, // فريقان (2 في 2)
+  teams3v3, // فريقان (3 في 3)
+  party, // حفلة - 4 إلى 8 لاعبين بدون فرق
 }
 
 // ===== مرحلة اللعبة =====
 
 enum GamePhase {
-  lobby,       // الانتظار - اللاعبون يجتمعون
-  describing,  // الوصف/التمثيل - المُوصِف يصف
-  guessing,    // التخمين - الفريق يخمّن
+  lobby, // الانتظار - اللاعبون يجتمعون
+  describing, // الوصف/التمثيل - المُوصِف يصف
+  guessing, // التخمين - الفريق يخمّن
   roundResult, // نتيجة الجولة - عرض النقاط
-  gameOver,    // نهاية اللعبة - الفائز
+  gameOver, // نهاية اللعبة - الفائز
 }
 
 // ===== نتيجة تحديث النقاط =====
@@ -41,30 +41,33 @@ class ScoreUpdate {
   });
 
   final String describerUid;
-  final String? guesserUid;       // null عند التخطي
-  final int describerDelta;       // +2 صحيح | -1 تخطي
-  final int guesserDelta;         // +3 صحيح | 0 تخطي
+  final String? guesserUid; // null عند التخطي
+  final int describerDelta; // +2 صحيح | -1 تخطي
+  final int guesserDelta; // +3 صحيح | 0 تخطي
   final Map<String, int> teamDeltas; // teamId → نقاط تُضاف
   final bool isCorrect;
   final bool isSkip;
 
   static const int correctDescriberPoints = 2;
   static const int correctGuesserPoints = 3;
+  static const int correctTeamPoints = 5;
   static const int skipDescriberPenalty = -1;
 
   factory ScoreUpdate.correct({
     required String describerUid,
     required String guesserUid,
-    required String? describingTeamId,
+    String? describingTeamId,
+    String? teamId,
   }) {
+    final scoringTeamId = teamId ?? describingTeamId;
     return ScoreUpdate(
       describerUid: describerUid,
       guesserUid: guesserUid,
       describerDelta: correctDescriberPoints,
       guesserDelta: correctGuesserPoints,
-      teamDeltas: describingTeamId == null
+      teamDeltas: scoringTeamId == null
           ? {}
-          : {describingTeamId: correctDescriberPoints + correctGuesserPoints},
+          : {scoringTeamId: correctTeamPoints},
       isCorrect: true,
       isSkip: false,
     );
@@ -79,9 +82,7 @@ class ScoreUpdate {
       guesserUid: null,
       describerDelta: skipDescriberPenalty,
       guesserDelta: 0,
-      teamDeltas: describingTeamId == null
-          ? {}
-          : {describingTeamId: skipDescriberPenalty},
+      teamDeltas: const {},
       isCorrect: false,
       isSkip: true,
     );
@@ -167,8 +168,7 @@ extension GameTypeX on GameType {
     }
   }
 
-  bool get isTeamMode =>
-      this == GameType.teams2v2 || this == GameType.teams3v3;
+  bool get isTeamMode => this == GameType.teams2v2 || this == GameType.teams3v3;
 
   int get teamCount => isTeamMode ? 2 : 0;
 

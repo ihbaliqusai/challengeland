@@ -14,6 +14,7 @@ import '../models/room_player.dart';
 import '../models/team.dart';
 import '../models/user_profile.dart';
 import 'mock_data_service.dart';
+import 'team_service.dart';
 
 class MatchmakingService {
   MatchmakingService({
@@ -27,6 +28,7 @@ class MatchmakingService {
   final MockDataService _mockDataService;
   final FirebaseFirestore? _firestore;
   final RoomCodeGenerator _codeGenerator;
+  final TeamService _teamService = const TeamService();
 
   static const int _roomExpiryMinutes = 30;
 
@@ -222,25 +224,7 @@ class MatchmakingService {
   /// مثال لـ 4 لاعبين (0-3 مرتبون من الأعلى تقييماً):
   ///   فريق A: [0, 3]  |  فريق B: [1, 2]
   Room autoAssignTeams(Room room) {
-    if (room.teams.length < 2 || room.players.isEmpty) return room;
-
-    final teamCount = room.teams.length;
-    final newTeams = room.teams
-        .map((t) => t.copyWith(playerIds: const []))
-        .toList();
-
-    for (int i = 0; i < room.players.length; i++) {
-      final round = i ~/ teamCount;
-      final teamIndex = round.isEven
-          ? i % teamCount
-          : (teamCount - 1) - (i % teamCount);
-
-      newTeams[teamIndex] = newTeams[teamIndex].copyWith(
-        playerIds: [...newTeams[teamIndex].playerIds, room.players[i].uid],
-      );
-    }
-
-    return room.copyWith(teams: newTeams);
+    return _teamService.autoAssignTeams(room);
   }
 
   // ═══════════════════════════════════════════════

@@ -12,8 +12,8 @@ class GameEndService {
   GameEndService({
     LeaderboardService? leaderboardService,
     FirebaseFirestore? firestore,
-  })  : _leaderboardService = leaderboardService ?? LeaderboardService(),
-        _firestore = firestore;
+  }) : _leaderboardService = leaderboardService ?? LeaderboardService(),
+       _firestore = firestore;
 
   final LeaderboardService _leaderboardService;
   final FirebaseFirestore? _firestore;

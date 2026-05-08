@@ -10,8 +10,8 @@ import '../models/challenge_card.dart';
 
 class ChallengeService {
   ChallengeService({FirebaseFirestore? firestore, Random? random})
-      : _firestore = firestore,
-        _random = random ?? Random();
+    : _firestore = firestore,
+      _random = random ?? Random();
 
   final FirebaseFirestore? _firestore;
   final Random _random;
@@ -65,9 +65,7 @@ class ChallengeService {
     var cards = await loadAllCards();
 
     if (categoryIds != null && categoryIds.isNotEmpty) {
-      cards = cards
-          .where((c) => categoryIds.contains(c.categoryId))
-          .toList();
+      cards = cards.where((c) => categoryIds.contains(c.categoryId)).toList();
     }
     if (types != null && types.isNotEmpty) {
       cards = cards.where((c) => types.contains(c.type)).toList();
@@ -77,7 +75,9 @@ class ChallengeService {
     }
 
     final shuffled = List<ChallengeCard>.from(cards)..shuffle(_random);
-    return shuffled.take(count.clamp(1, shuffled.length)).toList(growable: false);
+    return shuffled
+        .take(count.clamp(1, shuffled.length))
+        .toList(growable: false);
   }
 
   // ===== فلاتر مساعدة =====

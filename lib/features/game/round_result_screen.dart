@@ -207,10 +207,10 @@ class _RoundResultScreenState extends State<RoundResultScreen>
   }
 
   Widget _buildTeamScores(Room room) {
-    final sorted = [...room.teams]
-      ..sort((a, b) => b.score.compareTo(a.score));
-    final maxScore =
-        sorted.isEmpty ? 1 : sorted.first.score.clamp(1, double.maxFinite.toInt());
+    final sorted = [...room.teams]..sort((a, b) => b.score.compareTo(a.score));
+    final maxScore = sorted.isEmpty
+        ? 1
+        : sorted.first.score.clamp(1, double.maxFinite.toInt());
 
     return Padding(
       padding: const EdgeInsets.only(top: 12),
@@ -270,8 +270,9 @@ class _RoundResultScreenState extends State<RoundResultScreen>
                           child: LinearProgressIndicator(
                             minHeight: 10,
                             value: v,
-                            backgroundColor:
-                                Colors.white.withValues(alpha: 0.08),
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.08,
+                            ),
                             valueColor: AlwaysStoppedAnimation(color),
                           ),
                         ),
@@ -288,10 +289,9 @@ class _RoundResultScreenState extends State<RoundResultScreen>
   }
 
   Widget _buildAnswersList(LiveRoomState state, Map<String, int> roundPoints) {
-    final answers = state.answers.entries
-        .where((e) => e.value.text != '__skip__')
-        .toList()
-      ..sort((a, b) => a.value.submittedAt.compareTo(b.value.submittedAt));
+    final answers =
+        state.answers.entries.where((e) => e.value.text != '__skip__').toList()
+          ..sort((a, b) => a.value.submittedAt.compareTo(b.value.submittedAt));
 
     return Padding(
       padding: const EdgeInsets.only(top: 12),
@@ -327,12 +327,11 @@ class _RoundResultScreenState extends State<RoundResultScreen>
                 final answer = entry.value;
                 final isCorrect = answer.isCorrect;
                 final isMe = entry.key == _currentUid;
-                final isDescriber =
-                    entry.key == state.currentDescriber;
+                final isDescriber = entry.key == state.currentDescriber;
                 final pts = isCorrect == true
                     ? (isDescriber
-                        ? ScoreUpdate.correctDescriberPoints
-                        : ScoreUpdate.correctGuesserPoints)
+                          ? ScoreUpdate.correctDescriberPoints
+                          : ScoreUpdate.correctGuesserPoints)
                     : null;
 
                 return Padding(
@@ -343,13 +342,13 @@ class _RoundResultScreenState extends State<RoundResultScreen>
                         isCorrect == true
                             ? Icons.check_circle_rounded
                             : isCorrect == false
-                                ? Icons.cancel_rounded
-                                : Icons.hourglass_top_rounded,
+                            ? Icons.cancel_rounded
+                            : Icons.hourglass_top_rounded,
                         color: isCorrect == true
                             ? AppColors.challengeGreen
                             : isCorrect == false
-                                ? AppColors.challengeRed
-                                : AppColors.challengeGray,
+                            ? AppColors.challengeRed
+                            : AppColors.challengeGray,
                         size: 20,
                       ),
                       const SizedBox(width: 10),
@@ -363,8 +362,9 @@ class _RoundResultScreenState extends State<RoundResultScreen>
                                 color: isMe
                                     ? AppColors.challengeCyan
                                     : Colors.white,
-                                fontWeight:
-                                    isMe ? FontWeight.w900 : FontWeight.w700,
+                                fontWeight: isMe
+                                    ? FontWeight.w900
+                                    : FontWeight.w700,
                                 fontSize: 13,
                               ),
                             ),
@@ -381,10 +381,13 @@ class _RoundResultScreenState extends State<RoundResultScreen>
                       if (pts != null)
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.challengeGreen.withValues(
-                                alpha: 0.15),
+                              alpha: 0.15,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -448,10 +451,8 @@ class _RoundResultScreenState extends State<RoundResultScreen>
                     child: Text(
                       player.username,
                       style: TextStyle(
-                        color:
-                            isMe ? AppColors.challengeCyan : Colors.white,
-                        fontWeight:
-                            isMe ? FontWeight.w900 : FontWeight.w600,
+                        color: isMe ? AppColors.challengeCyan : Colors.white,
+                        fontWeight: isMe ? FontWeight.w900 : FontWeight.w600,
                       ),
                     ),
                   ),
@@ -503,10 +504,8 @@ class _RoundResultScreenState extends State<RoundResultScreen>
           const SizedBox(height: 4),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 280),
-            transitionBuilder: (child, anim) => ScaleTransition(
-              scale: anim,
-              child: child,
-            ),
+            transitionBuilder: (child, anim) =>
+                ScaleTransition(scale: anim, child: child),
             child: Text(
               '$_countdown',
               key: ValueKey(_countdown),
@@ -524,12 +523,7 @@ class _RoundResultScreenState extends State<RoundResultScreen>
   }
 
   Color _teamColor(Team team) {
-    try {
-      return Color(
-          int.parse('FF${team.color.replaceFirst('#', '')}', radix: 16));
-    } catch (_) {
-      return AppColors.challengeBlue;
-    }
+    return team.color;
   }
 }
 
