@@ -100,14 +100,18 @@ class _SettingsPanel extends StatelessWidget {
             ),
             child: Column(
               children: [
-                _SliderRow(
+                _SwitchRow(
                   icon: Icons.music_note_rounded,
-                  enabled: settings.soundOn,
+                  label: 'الصوت',
+                  value: settings.soundOn,
+                  onChanged: settings.setSound,
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
                 _SliderRow(
                   icon: Icons.volume_up_rounded,
                   enabled: settings.soundOn,
+                  value: settings.soundVolume,
+                  onChanged: settings.setSoundVolume,
                 ),
                 const SizedBox(height: 18),
                 _SwitchRow(
@@ -169,10 +173,17 @@ class _SettingsPanel extends StatelessWidget {
 }
 
 class _SliderRow extends StatelessWidget {
-  const _SliderRow({required this.icon, required this.enabled});
+  const _SliderRow({
+    required this.icon,
+    required this.enabled,
+    required this.value,
+    required this.onChanged,
+  });
 
   final IconData icon;
   final bool enabled;
+  final double value;
+  final ValueChanged<double> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -200,20 +211,33 @@ class _SliderRow extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: Container(
-            height: 24,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: enabled
-                    ? const [Color(0xFFFFFF00), Color(0xFFFFD000)]
-                    : const [Color(0xFF807B91), Color(0xFF5B546F)],
-              ),
-              borderRadius: BorderRadius.circular(999),
+          child: SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              trackHeight: 12,
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 14),
+              overlayShape: const RoundSliderOverlayShape(overlayRadius: 22),
+              activeTrackColor: const Color(0xFFFFD000),
+              inactiveTrackColor: const Color(0xFF5B546F),
+              thumbColor: Colors.white,
+            ),
+            child: Slider(
+              value: value.clamp(0.0, 1.0),
+              onChanged: enabled ? onChanged : null,
             ),
           ),
         ),
         const SizedBox(width: 8),
-        const _NudgePill(),
+        SizedBox(
+          width: 48,
+          child: Text(
+            '${(value * 100).round()}%',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: enabled ? Colors.white : Colors.white54,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -574,34 +598,6 @@ class _BlueButton extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _NudgePill extends StatelessWidget {
-  const _NudgePill();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 62,
-      height: 46,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(999),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.24),
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Icon(
-        Icons.keyboard_double_arrow_left_rounded,
-        color: const Color(0xFF8E72C4).withValues(alpha: 0.6),
-        size: 34,
       ),
     );
   }
