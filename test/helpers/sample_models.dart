@@ -2,6 +2,7 @@ import 'package:challenge_land/models/game_session.dart';
 import 'package:challenge_land/models/question.dart';
 import 'package:challenge_land/models/room.dart';
 import 'package:challenge_land/models/room_player.dart';
+import 'package:challenge_land/models/player_role.dart';
 import 'package:challenge_land/models/team.dart';
 import 'package:challenge_land/models/user_profile.dart';
 
@@ -102,12 +103,15 @@ RoomPlayer sampleRoomPlayer({
 Team sampleTeam({
   String id = 'blue',
   String name = 'الفريق الأزرق',
+  String color = '#2563EB',
+  String emoji = '🔵',
   int score = 120,
 }) {
   return Team(
     id: id,
     name: name,
-    color: '#2563EB',
+    color: color,
+    emoji: emoji,
     playerIds: const ['player-1'],
     score: score,
   );
@@ -120,15 +124,19 @@ Room sampleRoom({String id = 'room-1'}) {
     code: 'ABC234',
     name: 'غرفة الاختبار',
     hostId: 'player-1',
-    mode: 'private_battle',
+    mode: 'teams2v2',
+    gameType: GameType.teams2v2,
     questionCount: 5,
     maxPlayers: 4,
-    timerSeconds: 15,
+    roundDuration: 60,
+    totalRounds: 5,
+    currentRound: 0,
+    phase: GamePhase.lobby,
     status: 'waiting',
     players: [sampleRoomPlayer()],
     teams: [
       sampleTeam(),
-      sampleTeam(id: 'gold', name: 'الفريق الذهبي', score: 80),
+      sampleTeam(id: 'gold', name: 'الفريق الذهبي', color: '#EAB308', emoji: '🟡', score: 80),
     ],
     gameSessionId: null,
     createdAt: now,

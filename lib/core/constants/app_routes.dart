@@ -14,6 +14,9 @@ class AppRoutes {
   static const teamSetup = '/team-setup';
   static const categorySelection = '/category-selection';
   static const gameBoard = '/game-board';
+  static const liveGame = '/live-game';
+  static const roundResult = '/round-result';
+  static const gameOver = '/game-over';
   static const question = '/question';
   static const answerReveal = '/answer-reveal';
   static const gameResult = '/game-result';

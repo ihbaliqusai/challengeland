@@ -12,7 +12,10 @@ import '../../features/game/category_selection_screen.dart';
 import '../../features/game/game_board_screen.dart';
 import '../../features/game/game_mode_selection_screen.dart';
 import '../../features/game/game_result_screen.dart';
+import '../../features/game/game_over_screen.dart';
+import '../../features/game/live_game_screen.dart';
 import '../../features/game/question_screen.dart';
+import '../../features/game/round_result_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/leaderboard/leaderboard_screen.dart';
 import '../../features/matchmaking/quick_match_screen.dart';
@@ -49,6 +52,9 @@ class AppRouter {
       AppRoutes.teamSetup => const TeamSetupScreen(),
       AppRoutes.categorySelection => const CategorySelectionScreen(),
       AppRoutes.gameBoard => const GameBoardScreen(),
+      AppRoutes.liveGame => const LiveGameScreen(),
+      AppRoutes.roundResult => const RoundResultScreen(),
+      AppRoutes.gameOver => const GameOverScreen(),
       AppRoutes.question => const QuestionScreen(),
       AppRoutes.gameResult => const GameResultScreen(),
       AppRoutes.dailyChallenge => const DailyChallengeScreen(),
