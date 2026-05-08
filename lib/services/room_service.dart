@@ -176,4 +176,11 @@ class RoomService {
   Future<Room> finishRoom(Room room) async {
     return updateRoomSettings(room.copyWith(status: 'finished'));
   }
+
+  Future<Room> setPlayerReady(Room room, String uid, bool ready) async {
+    final players = room.players
+        .map((p) => p.uid == uid ? p.copyWith(isReady: ready) : p)
+        .toList(growable: false);
+    return updateRoomSettings(room.copyWith(players: players));
+  }
 }
