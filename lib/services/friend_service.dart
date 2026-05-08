@@ -96,10 +96,10 @@ class FriendService {
     return _roomService.createRoom(
       host: host,
       name: 'تحدي ${friend.username}',
-      mode: 'private_battle',
+      mode: 'quick1v1',
       questionCount: 5,
       maxPlayers: 2,
-      timerSeconds: 15,
+      roundDuration: 60,
     );
   }
 }

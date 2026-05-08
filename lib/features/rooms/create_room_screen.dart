@@ -17,10 +17,11 @@ class CreateRoomScreen extends StatefulWidget {
 
 class _CreateRoomScreenState extends State<CreateRoomScreen> {
   final _nameController = TextEditingController(text: 'غرفة التحدي');
-  int _questionCount = 10;
+  final int _questionCount = 10;
   int _maxPlayers = 4;
-  int _timerSeconds = 15;
-  String _mode = 'private_battle';
+  int _roundDuration = 60;
+  int _totalRounds = 5;
+  String _mode = 'quick1v1';
 
   @override
   void dispose() {
@@ -44,30 +45,31 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
         _choiceRow(
           'النمط',
           {
-            'private_battle': 'خاص',
-            'team_battle': 'فرق',
-            'categories_points': 'فئات',
+            'quick1v1': '1 ضد 1',
+            'teams2v2': 'فرق 2v2',
+            'teams3v3': 'فرق 3v3',
+            'party': 'حفلة',
           },
           _mode,
           (value) => setState(() => _mode = value),
         ),
         _choiceRow(
-          'عدد الأسئلة',
-          {5: '5', 10: '10', 15: '15', 20: '20'},
-          _questionCount,
-          (value) => setState(() => _questionCount = value),
+          'عدد الجولات',
+          {3: '3', 5: '5', 7: '7', 10: '10'},
+          _totalRounds,
+          (value) => setState(() => _totalRounds = value),
+        ),
+        _choiceRow(
+          'مدة الجولة',
+          {30: '30ث', 60: '60ث', 90: '90ث', 120: '2د'},
+          _roundDuration,
+          (value) => setState(() => _roundDuration = value),
         ),
         _choiceRow(
           'اللاعبون',
           {2: '2', 4: '4', 6: '6', 8: '8'},
           _maxPlayers,
           (value) => setState(() => _maxPlayers = value),
-        ),
-        _choiceRow(
-          'المؤقت',
-          {10: '10ث', 15: '15ث', 20: '20ث', 30: '30ث'},
-          _timerSeconds,
-          (value) => setState(() => _timerSeconds = value),
         ),
         const SizedBox(height: 18),
         AppButton(
@@ -83,7 +85,8 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
               mode: _mode,
               questionCount: _questionCount,
               maxPlayers: _maxPlayers,
-              timerSeconds: _timerSeconds,
+              roundDuration: _roundDuration,
+              totalRounds: _totalRounds,
             );
             if (context.mounted && context.read<RoomProvider>().room != null) {
               Navigator.pushReplacementNamed(context, AppRoutes.roomLobby);

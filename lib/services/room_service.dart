@@ -32,7 +32,8 @@ class RoomService {
     required String mode,
     required int questionCount,
     required int maxPlayers,
-    required int timerSeconds,
+    int roundDuration = 60,
+    int totalRounds = 5,
   }) async {
     final code = _codeGenerator.generate();
     if (AppConfig.useMockData) {
@@ -43,7 +44,8 @@ class RoomService {
         mode: mode,
         questionCount: questionCount,
         maxPlayers: maxPlayers,
-        timerSeconds: timerSeconds,
+        roundDuration: roundDuration,
+        totalRounds: totalRounds,
       );
       return _mockRoom!;
     }
@@ -56,7 +58,8 @@ class RoomService {
       mode: mode,
       questionCount: questionCount,
       maxPlayers: maxPlayers,
-      timerSeconds: timerSeconds,
+      roundDuration: roundDuration,
+      totalRounds: totalRounds,
     );
     final realRoom = room.copyWith(id: doc.id);
     await doc.set(realRoom.toJson());
@@ -74,10 +77,9 @@ class RoomService {
             host: user,
             code: code,
             name: 'غرفة تدريب',
-            mode: 'private_battle',
+            mode: 'quick1v1',
             questionCount: 5,
             maxPlayers: 4,
-            timerSeconds: 15,
           );
       if (base.isFull) throw StateError('الغرفة ممتلئة');
       final exists = base.players.any((player) => player.uid == user.uid);

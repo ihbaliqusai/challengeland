@@ -21,7 +21,8 @@ class RoomProvider extends ChangeNotifier {
     required String mode,
     required int questionCount,
     required int maxPlayers,
-    required int timerSeconds,
+    int roundDuration = 60,
+    int totalRounds = 5,
   }) async {
     await _run(() async {
       room = await _roomService.createRoom(
@@ -30,7 +31,8 @@ class RoomProvider extends ChangeNotifier {
         mode: mode,
         questionCount: questionCount,
         maxPlayers: maxPlayers,
-        timerSeconds: timerSeconds,
+        roundDuration: roundDuration,
+        totalRounds: totalRounds,
       );
     });
   }

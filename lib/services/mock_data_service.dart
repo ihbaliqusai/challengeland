@@ -9,6 +9,7 @@ import '../core/utils/date_utils.dart';
 import '../models/category.dart';
 import '../models/challenge_card.dart';
 import '../models/daily_challenge.dart';
+import '../models/player_role.dart';
 import '../models/game_session.dart';
 import '../models/leaderboard_entry.dart';
 import '../models/match_history.dart';
@@ -151,18 +152,24 @@ class MockDataService {
     required String mode,
     required int questionCount,
     required int maxPlayers,
-    required int timerSeconds,
+    int roundDuration = 60,
+    int totalRounds = 5,
   }) async {
     final now = DateTime.now();
+    final gameType = GameTypeX.fromString(mode);
     return Room(
       id: 'mock-room-${_uuid.v4()}',
       code: code,
       name: name,
       hostId: host.uid,
       mode: mode,
+      gameType: gameType,
       questionCount: questionCount,
       maxPlayers: maxPlayers,
-      timerSeconds: timerSeconds,
+      roundDuration: roundDuration,
+      totalRounds: totalRounds,
+      currentRound: 0,
+      phase: GamePhase.lobby,
       status: 'waiting',
       players: [
         RoomPlayer(
@@ -172,25 +179,13 @@ class MockDataService {
           isHost: true,
           isReady: true,
           score: 0,
+          role: PlayerRole.host,
           joinedAt: now,
         ),
       ],
-      teams: const [
-        Team(
-          id: 'a',
-          name: 'الفريق الأزرق',
-          color: '#2563EB',
-          playerIds: [],
-          score: 0,
-        ),
-        Team(
-          id: 'b',
-          name: 'الفريق الذهبي',
-          color: '#FBBF24',
-          playerIds: [],
-          score: 0,
-        ),
-      ],
+      teams: gameType.isTeamMode
+          ? [Team.fromPreset(0), Team.fromPreset(1)]
+          : const [],
       createdAt: now,
       updatedAt: now,
     );
